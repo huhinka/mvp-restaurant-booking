@@ -2,7 +2,7 @@
 
 ## 项目介绍
 
-Hilton Restaurants want to create an online table reservation system to allow guests to reserve tables. Guests will make a reservation with their personal contact info, and the restaurant employees will browse and manage those reservations.
+Someone restaurant want to create an online table reservation system to allow guests to reserve tables. Guests will make a reservation with their personal contact info, and the restaurant employees will browse and manage those reservations.
 
 ## 系统架构
 
