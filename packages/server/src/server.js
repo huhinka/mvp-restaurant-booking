@@ -1,6 +1,6 @@
 import "dotenv/config.js";
 import http from "http";
-import app from "./app.js";
+import { app } from "./app.js";
 import { closeDb, connectWithRetry } from "./infrastructure/db.js";
 import { log } from "./infrastructure/logger.js";
 
