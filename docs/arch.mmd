@@ -1,0 +1,16 @@
+graph TD
+    subgraph 前端应用
+        A[web]
+    end
+
+    subgraph 后端服务
+        B[server]
+        C[MongoDB]
+        H[PM2]
+        J[备份服务]
+    end
+
+    A -->|HTTP/GraphQL| B
+    B -->|查询数据| C
+    B -->|监控| H
+    C -->|备份数据| J

@@ -1,0 +1,140 @@
+@startuml
+!include lib-eventstorming.puml
+
+DomainEvent("ReservationRequested") [
+  预约已申请
+  --
+  预约 ID
+  客人姓名
+  客人电话
+  客人 Email
+  预计抵达时间
+  宴会规模（人数）
+]
+
+DomainEvent("ReservationApproved") [
+  预约已批准
+  --
+  预约 ID
+]
+
+DomainEvent("ReservationUpdated") [
+  预约已更新
+  --
+  预约 ID
+  客人姓名
+  客人电话
+  客人 Email
+  预计抵达时间
+  宴会规模（人数）
+]
+
+DomainEvent("ReservationCancelled") [
+  预约已取消
+  --
+  预约 ID
+  取消原因
+]
+
+DomainEvent("ReservationCompleted") [
+  预约已完成
+  --
+  预约 ID
+]
+
+
+
+
+
+
+Command("RequestReservation") [
+  创建预约
+  --
+  客人姓名
+  客人电话
+  客人 Email
+  预计抵达时间
+  宴会规模（人数）
+  --
+  1. 电话与 Email 至少一个不为空
+]
+
+Command("ApproveReservation") [
+  批准预约
+  --
+  预约 ID
+]
+
+Command("UpdateReservation") [
+  更新预约
+  --
+  预约 ID
+  客人姓名
+  客人电话
+  客人 Email
+  预计抵达时间
+  宴会规模（人数）
+  --
+  1. 电话与 Email 至少一个不为空
+]
+
+Command("CancelReservation") [
+  取消预约
+  --
+  预约 ID
+  取消原因
+]
+
+Command("CompleteReservation") [
+  完成预约
+  --
+  预约 ID
+]
+
+
+
+
+
+
+Aggregate("Reservation") [
+  预约
+  --
+  预约 ID
+  客人姓名
+  客人电话
+  客人 Email
+  预计抵达时间
+  宴会规模（人数）
+  预约状态(Requested, Approved, Cancelled, Completed)
+  取消原因
+]
+
+Reservation --> ReservationRequested
+Reservation --> ReservationApproved
+Reservation --> ReservationUpdated
+Reservation --> ReservationCancelled
+Reservation --> ReservationCompleted
+
+RequestReservation --> Reservation
+ApproveReservation --> Reservation
+UpdateReservation --> Reservation
+CancelReservation --> Reservation
+CompleteReservation --> Reservation
+
+
+
+
+
+actor 客人 as guest
+guest --> RequestReservation
+guest --> UpdateReservation
+guest --> CancelReservation
+
+actor 员工 as employee
+employee --> ApproveReservation
+employee --> CancelReservation
+employee --> CompleteReservation
+
+
+
+@enduml

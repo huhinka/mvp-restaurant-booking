@@ -6,27 +6,21 @@ Someone restaurant want to create an online table reservation system to allow gu
 
 ## 系统架构
 
-![系统架构图](./docs/image/arch.png)
-
-- (本项目的系统架构，体现系统的)
+![系统架构图](./docs/images/arch.jpg)
 
 ### 系统整体介绍
 
-在这里描述系统的整体介绍
+系统分为前端与后端两个项目，前端使用 React 框架，后端使用 Node.js 框架，数据库使用 MongoDB。
 
-1. ....
-2. ....
+1. server：后端项目，使用 Node.js 框架，提供 RESTful 与 GraphQL 接口，处理业务逻辑，与数据库交互。
+2. web: 前端项目，SPA，使用 React 框架，提供用户界面，与后端接口交互。
 
 ## 系统模块
 
-### 模块 A
+### server
 
-![](./docs/image/module-xxx.png)
+![](./docs/images/event-storming.jpg)
 
-在这里描述模块 A 设计说明
-
-1. 模块 A 的设计思路，作用，说明，
-2. 模块 A 与其它模块之间的关系
 
 ### 模块 B
 
@@ -51,25 +45,25 @@ project
 |   ├── resource -- 这里面存放 该项目相关的资源文件
 |   ├── custom -- 自定义文档存放，自定义名称
 |   └── ... -- ...
-├── module1 -- 模块1，简要说明
-|   ├── sub-moudle1 -- 子模块1，简要说明
-|   ├── ... -- ...
+├── packages -- 模块1，简要说明
+|   ├── server -- 子模块1，简要说明
+|   ├── web -- ...
 ```
 
 ## 技术概要
 
-| 技术                 | 说明             | 官网                            |
-| -------------------- | ---------------- | ------------------------------- |
-| Node.js              | JS 运行时        | https://nodejs.org/en           |
-| Express.js           | Node.js web 框架 | https://expressjs.com           |
+| 技术       | 说明             | 官网                  |
+| ---------- | ---------------- | --------------------- |
+| Node.js    | JS 运行时        | https://nodejs.org/en |
+| Express.js | Node.js web 框架 | https://expressjs.com |
 
 ## 环境搭建
 
 ### 开发环境
 
-| 工具                | 版本号 | 下载                                                      |
-| ------------------- | ------ | --------------------------------------------------------- |
-| Node.js                 | 20.12.1    | https://nodejs.org/en/download |
+| 工具    | 版本号  | 下载                           |
+| ------- | ------- | ------------------------------ |
+| Node.js | 20.12.1 | https://nodejs.org/en/download |
 
 ### 开发配置
 
