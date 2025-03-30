@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@apollo/server": "^4.11.3",
     "@joi/date": "^2.1.1",
     "bcrypt": "^5.1.1",
     "cookie-parser": "^1.4.7",
@@ -22,6 +23,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "express-async-errors": "^3.1.1",
+    "graphql": "^16.10.0",
     "helmet": "^8.1.0",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
@@ -35,6 +37,7 @@
     "chai-http": "^5.1.1",
     "eslint": "^9.23.0",
     "eslint-plugin-import": "^2.31.0",
+    "graphiql": "^3.8.3",
     "mocha": "^11.1.0",
     "mongodb-memory-server": "^10.1.4",
     "nodemon": "^3.1.9",
