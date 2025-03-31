@@ -4,6 +4,21 @@
 
 Someone restaurant want to create an online table reservation system to allow guests to reserve tables. Guests will make a reservation with their personal contact info, and the restaurant employees will browse and manage those reservations.
 
+## Features
+
+- [x] 用户登录、注册
+- [x] 客人预约餐厅
+- [ ] 客人更新预约
+- [ ] 客人取消预约
+- [ ] 客人查看预约情况
+- [ ] 餐厅员工查看预约情况
+- [x] 餐厅员工批准预约
+- [ ] 餐厅员工取消预约
+- [ ] 餐厅员工完成预约
+- [ ] docker compose
+- [ ] metrics
+- [ ] Solidjs SPA
+
 ## 系统架构
 
 ![系统架构图](./docs/images/arch.jpg)
