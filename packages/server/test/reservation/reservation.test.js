@@ -175,6 +175,41 @@ describe("Reservation API", () => {
       expect(res.status).to.equal(200);
       expect(res.body.errors[0].message).to.match(/权限不足/i);
     });
+
+    it("could view guest owner reservations", async () => {
+      const res = await guestQuery(`
+            query Reservations{
+              myReservations(page: 1, pageSize: 10) {
+                id
+                status
+                guestName
+                email
+                phone
+                arrivalTime
+                partySize
+              }
+            }
+        `);
+
+      expect(res.status).to.equal(200);
+      expect(res.body.data.myReservations.length).to.equal(1);
+    });
+
+    it("could return empty list if no reservations", async () => {
+      const res = await queryGraphQL(
+        guest2Token,
+        `
+            query Reservations{
+              myReservations(page: 1, pageSize: 10) {
+                id
+              }
+            }
+        `
+      );
+
+      expect(res.status).to.equal(200);
+      expect(res.body.data.myReservations.length).to.equal(0);
+    });
   });
 
   describe("Staff", () => {

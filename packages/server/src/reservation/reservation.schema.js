@@ -1,6 +1,6 @@
 export const reservationSchema = `#graphql
   type Query {
-    _empty: String
+    myReservations(page: Int, pageSize: Int): [Reservation!]!
   }
 
   type Mutation {
