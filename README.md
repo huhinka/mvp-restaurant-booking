@@ -8,13 +8,14 @@ Someone restaurant want to create an online table reservation system to allow gu
 
 - [x] 用户登录、注册
 - [x] 客人预约餐厅
-- [ ] 客人更新预约
-- [ ] 客人取消预约
-- [ ] 客人查看预约情况
-- [ ] 餐厅员工查看预约情况
+- [x] 客人更新预约
+- [x] 客人取消预约
+- [x] 客人查看预约情况
+- [x] 餐厅员工查看预约情况
 - [x] 餐厅员工批准预约
-- [ ] 餐厅员工取消预约
-- [ ] 餐厅员工完成预约
+- [x] 餐厅员工取消预约
+- [x] 餐厅员工完成预约
+- [ ] Swagger API Doc
 - [ ] docker compose
 - [ ] metrics
 - [ ] Solidjs SPA
