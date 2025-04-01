@@ -1,4 +1,4 @@
-import { describe, before, beforeEach, it } from "mocha";
+import { describe, before, beforeEach, afterEach, it } from "mocha";
 import { expect } from "chai";
 import request from "supertest";
 import jwt from "jsonwebtoken";
@@ -38,12 +38,16 @@ describe("Reservation API", () => {
     });
   });
 
+  afterEach(async () => {
+    await Reservation.deleteMany({});
+  });
+
   async function guestQuery(query) {
     return await queryGraphQL(guestToken, query);
   }
 
-  async function staffQuery(query) {
-    return await queryGraphQL(staffToken, query);
+  async function staffQuery(query, variables = {}) {
+    return await queryGraphQL(staffToken, query, variables);
   }
 
   describe("Guest", () => {
@@ -210,6 +214,21 @@ describe("Reservation API", () => {
       expect(res.status).to.equal(200);
       expect(res.body.data.myReservations.length).to.equal(0);
     });
+
+    it("could not view other guest reservations", async () => {
+      const res = await guestQuery(
+        `
+            query Reservations{
+              reservations(page: 1, pageSize: 10, filter: {}) {
+                id
+              }
+            }
+        `
+      );
+
+      expect(res.status).to.equal(200);
+      expect(res.body.errors[0].message).to.match(/权限不足/i);
+    });
   });
 
   describe("Staff", () => {
@@ -295,12 +314,129 @@ describe("Reservation API", () => {
         /无法从 REQUESTED 变更为 COMPLETED/i
       );
     });
+
+    describe("Staff View Reservations", () => {
+      beforeEach(async () => {
+        const guest = await User.findOne({ email: "guest@test.com" });
+        const baseTime = new Date("2025-03-10T00:00:00Z");
+
+        async function createTestReservation(status, arrivalTime) {
+          return await Reservation.create({
+            status: status,
+            arrivalTime: arrivalTime,
+            guestName: "Test User",
+            phone: "1234567890",
+            email: "test@test.com",
+            user: guest._id,
+            partySize: 4,
+          });
+        }
+
+        await createTestReservation("APPROVED", new Date(baseTime.setDate(21)));
+        await createTestReservation(
+          "COMPLETED",
+          new Date(baseTime.setDate(19))
+        );
+        await createTestReservation(
+          "REQUESTED",
+          // setHours will change the date, so we need to set the date first
+          new Date(baseTime.setHours(10))
+        );
+      });
+
+      it("could view all reservations filter by date and status", async () => {
+        const res = await staffQuery(
+          `
+            query Reservations ($statuses: [ReservationStatus!], $start: DateTime!, $end: DateTime!) {
+              reservations(page: 1,
+                  pageSize: 10, 
+                  filter: {
+                    startDate: $start, 
+                    endDate: $end,
+                    statuses: $statuses
+                  }
+                ) {
+                  id
+                  status
+                  guestName
+                  email
+                  phone
+                  arrivalTime
+                  partySize
+              }
+            }
+        `,
+          {
+            statuses: ["REQUESTED", "APPROVED"],
+            start: "2025-03-10T00:00:00Z",
+            end: "2025-03-20T23:59:59Z",
+          }
+        );
+
+        expect(res.status).to.equal(200);
+        expect(res.body.data.reservations.length).to.equal(1);
+      });
+
+      it("could view all reservations with no filter", async () => {
+        const res = await staffQuery(
+          `
+            query Reservations ($statuses: [ReservationStatus!], $start: DateTime, $end: DateTime) {
+              reservations(page: 1,
+                  pageSize: 10, 
+                  filter: {
+                    startDate: $start, 
+                    endDate: $end,
+                    statuses: $statuses
+                  }
+                ) {
+                  id
+                  status
+                  guestName
+                  email
+                  phone
+                  arrivalTime
+                  partySize
+              }
+            }
+        `
+        );
+
+        expect(res.status).to.equal(200);
+        expect(res.body.data.reservations.length).to.equal(4);
+      });
+
+      it("validate the edge of date range", async () => {
+        const res = await staffQuery(
+          `
+            query Reservations ($statuses: [ReservationStatus!], $start: DateTime!, $end: DateTime!) {
+              reservations(page: 1,
+                  pageSize: 10, 
+                  filter: {
+                    startDate: $start, 
+                    endDate: $end,
+                    statuses: $statuses
+                  }
+                ) {
+                  id
+              }
+            }
+          `,
+          {
+            start: "2025-03-19T00:00:00Z",
+            end: "2025-03-19T00:00:00Z",
+          }
+        );
+
+        expect(res.status).to.equal(200);
+        expect(res.body.data.reservations.length).to.equal(1);
+      });
+    });
   });
 });
 
-async function queryGraphQL(token, query) {
+async function queryGraphQL(token, query, variables = {}) {
   return await request(app)
     .post("/reservation")
     .set("Authorization", `Bearer ${token}`)
-    .send({ query });
+    .send({ query, variables });
 }

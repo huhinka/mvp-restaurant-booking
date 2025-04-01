@@ -1,6 +1,7 @@
 export const reservationSchema = `#graphql
   type Query {
     myReservations(page: Int, pageSize: Int): [Reservation!]!
+    reservations(page: Int, pageSize: Int, filter: ReservationFilterInput): [Reservation!]!
   }
 
   type Mutation {
@@ -47,5 +48,11 @@ export const reservationSchema = `#graphql
     phone: String
     arrivalTime: String
     partySize: Int
+  }
+
+  input ReservationFilterInput {
+    startDate: DateTime
+    endDate: DateTime
+    statuses: [ReservationStatus!]
   }
 `;

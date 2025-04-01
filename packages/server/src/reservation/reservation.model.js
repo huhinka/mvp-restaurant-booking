@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 
+export const reservationStatuses = ["REQUESTED", "APPROVED", "CANCELLED", "COMPLETED"];
+
 const reservationSchema = new mongoose.Schema(
   {
     guestName: {
@@ -28,7 +30,7 @@ const reservationSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: {
-        values: ["REQUESTED", "APPROVED", "CANCELLED", "COMPLETED"],
+        values: reservationStatuses,
         message: "无效的状态值",
       },
       default: "REQUESTED",

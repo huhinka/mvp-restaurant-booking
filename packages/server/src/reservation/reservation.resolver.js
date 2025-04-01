@@ -1,5 +1,5 @@
 import { log } from "../infrastructure/logger.js";
-import { Reservation } from "./reservation.model.js";
+import { Reservation, reservationStatuses } from "./reservation.model.js";
 
 const statusTransitionMap = {
   REQUESTED: ["APPROVED", "CANCELLED"],
@@ -14,6 +14,32 @@ export const reservationResolvers = {
       return Reservation.find({ user: user._id })
         .limit(pageSize)
         .skip((page - 1) * pageSize);
+    },
+
+    reservations: async (_, { page = 1, pageSize = 10, filter }, { user }) => {
+      ensureStaff(user);
+
+      const { startDate, endDate, statuses } = filter;
+      const query = {};
+
+      if (statuses?.length) {
+        const invalidStatus = statuses.find(
+          (s) => !reservationStatuses.includes(s)
+        );
+        if (invalidStatus) throw new Error(`无效状态值: ${invalidStatus}`);
+        query.status = { $in: statuses };
+      }
+
+      if (startDate || endDate) {
+        query.arrivalTime = {};
+        if (startDate) query.arrivalTime.$gte = new Date(startDate);
+        if (endDate) query.arrivalTime.$lte = new Date(endDate);
+      }
+
+      return Reservation.find(query)
+        .limit(pageSize)
+        .skip((page - 1) * pageSize)
+        .sort({ arrivalTime: 1 });
     },
   },
 
