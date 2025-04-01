@@ -161,6 +161,20 @@ describe("Reservation API", () => {
         /找不到预约或您没有权限取消此预约/i
       );
     });
+
+    it("could not complete a reservation by guest", async () => {
+      const res = await guestQuery(`
+            mutation CompleteReservation{
+                completeReservation(id: "${testReservation._id}") {
+                  id
+                  status
+                }
+            }
+        `);
+
+      expect(res.status).to.equal(200);
+      expect(res.body.errors[0].message).to.match(/权限不足/i);
+    });
   });
 
   describe("Staff", () => {
@@ -209,6 +223,42 @@ describe("Reservation API", () => {
 
       expect(res.status).to.equal(200);
       expect(res.body.data.cancelReservation.status).to.equal("CANCELLED");
+    });
+
+    it("could complete a reservation", async () => {
+      testReservation.status = "APPROVED";
+      testReservation.save();
+
+      const res = await staffQuery(`
+            mutation CompleteReservation{
+                completeReservation(id: "${testReservation._id}") {
+                  id
+                  status
+                }
+            }
+        `);
+
+      expect(res.status).to.equal(200);
+      expect(res.body.data.completeReservation.status).to.equal("COMPLETED");
+    });
+
+    it("could complete a reservation that status is not APPROVED", async () => {
+      testReservation.status = "REQUESTED";
+      testReservation.save();
+
+      const res = await staffQuery(`
+            mutation CompleteReservation{
+                completeReservation(id: "${testReservation._id}") {
+                  id
+                  status
+                }
+            }
+        `);
+
+      expect(res.status).to.equal(200);
+      expect(res.body.errors[0].message).to.match(
+        /无法从 REQUESTED 变更为 COMPLETED/i
+      );
     });
   });
 });

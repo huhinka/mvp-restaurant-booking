@@ -8,6 +8,7 @@ export const reservationSchema = `#graphql
     updateReservation(id: ID!, input: ReservationUpdateInput!): Reservation!
     cancelReservation(id: ID!): Reservation!
     approveReservation(id: ID!): Reservation!
+    completeReservation(id: ID!): Reservation!
   }
 
   scalar DateTime

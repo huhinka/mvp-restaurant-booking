@@ -65,6 +65,12 @@ export const reservationResolvers = {
 
       return updateReservationStatus(id, "APPROVED");
     },
+
+    completeReservation: async (_, { id }, { user }) => {
+      ensureStaff(user);
+
+      return updateReservationStatus(id, "COMPLETED");
+    },
   },
 };
 
