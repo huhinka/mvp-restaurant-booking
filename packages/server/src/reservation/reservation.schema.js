@@ -5,6 +5,7 @@ export const reservationSchema = `#graphql
 
   type Mutation {
     createReservation(input: ReservationInput!): Reservation!
+    updateReservation(id: ID!, input: ReservationUpdateInput!): Reservation!
     approveReservation(id: ID!): Reservation!
   }
 
@@ -36,5 +37,13 @@ export const reservationSchema = `#graphql
     phone: String!
     arrivalTime: String!
     partySize: Int!
+  }
+
+  input ReservationUpdateInput {
+    guestName: String
+    email: String
+    phone: String
+    arrivalTime: String
+    partySize: Int
   }
 `;

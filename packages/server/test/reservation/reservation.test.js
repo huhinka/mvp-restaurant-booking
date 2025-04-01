@@ -76,6 +76,52 @@ describe("Reservation API", () => {
       expect(res.status).to.equal(200);
       expect(res.body.errors[0].message).to.match(/权限不足/i);
     });
+
+    it("could update reservation", async () => {
+      const arrivalTime = new Date(Date.now() + 24 * 3600 * 1000).toISOString();
+      const res = await guestQuery(`
+            mutation UpdateReservation{
+              updateReservation(id: "${testReservation._id}", input: {
+                guestName: "new value",
+                email: "updated@test.com",
+                phone: "1234567890",
+                arrivalTime: "${arrivalTime}",
+                partySize: 3
+              }) {
+                guestName
+                email
+                phone
+                arrivalTime
+                partySize
+                }
+            }`);
+
+      expect(res.status).to.equal(200);
+      const reservation = res.body.data.updateReservation;
+      expect(reservation).is.not.null;
+      expect(reservation.guestName).to.equal("new value");
+      expect(reservation.email).to.equal("updated@test.com");
+      expect(reservation.phone).to.equal("1234567890");
+      expect(reservation.arrivalTime).to.equal(arrivalTime);
+      expect(reservation.partySize).to.equal(3);
+    });
+
+    it("could not update reservation with status APPROVED", async () => {
+      testReservation.status = "APPROVED";
+      testReservation.save();
+
+      const res = await guestQuery(`
+            mutation UpdateReservation{
+              updateReservation(id: "${testReservation._id}", input: {
+                partySize: 3
+              }) {
+                partySize
+                }
+            }`);
+
+      expect(res.status).to.equal(200);
+      expect(res.body.errors[0].message).to.match(/预约状态不正确/i);
+    });
   });
 
   describe("Staff", () => {

@@ -1,5 +1,5 @@
-import { Reservation } from "./reservation.model.js";
 import { log } from "../infrastructure/logger.js";
+import { Reservation } from "./reservation.model.js";
 
 const statusTransitionMap = {
   REQUESTED: ["APPROVED", "CANCELLED"],
@@ -24,6 +24,29 @@ export const reservationResolvers = {
       } catch (error) {
         log.error(`[Resolver] 创建预约失败: ${error.stack}`);
         throw new Error(`无法创建预约: ${error.message}`);
+      }
+    },
+
+    updateReservation: async (_, { id, input }, { user }) => {
+      try {
+        const reservation = await Reservation.findOne({
+          _id: id,
+          user: user._id,
+          status: "REQUESTED",
+        });
+        if (!reservation) {
+          throw new Error("找不到预约或预约状态不正确");
+        }
+
+        if (input.arrivalTime) {
+          input.arrivalTime = new Date(input.arrivalTime);
+        }
+
+        Object.assign(reservation, input);
+        return reservation.save();
+      } catch (error) {
+        log.error(`[Resolver] 更新预约失败: ${error.stack}`);
+        throw new Error(`无法更新预约: ${error.message}`);
       }
     },
 
