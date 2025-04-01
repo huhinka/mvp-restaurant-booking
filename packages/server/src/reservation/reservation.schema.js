@@ -6,6 +6,7 @@ export const reservationSchema = `#graphql
   type Mutation {
     createReservation(input: ReservationInput!): Reservation!
     updateReservation(id: ID!, input: ReservationUpdateInput!): Reservation!
+    cancelReservation(id: ID!): Reservation!
     approveReservation(id: ID!): Reservation!
   }
 

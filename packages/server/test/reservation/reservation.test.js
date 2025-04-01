@@ -7,15 +7,21 @@ import { Reservation } from "../../src/reservation/reservation.model.js";
 import { User } from "../../src/auth/user.model.js";
 
 describe("Reservation API", () => {
-  let guestToken, staffToken, testReservation;
+  let guestToken, guest2Token, staffToken, testReservation;
 
   before(async () => {
-    const [guest, staff] = await Promise.all([
+    const [guest, guest2, staff] = await Promise.all([
       User.create({ email: "guest@test.com", password: "pass", role: "guest" }),
+      User.create({
+        email: "guest2@test.com",
+        password: "pass",
+        role: "guest",
+      }),
       User.create({ email: "staff@test.com", password: "pass", role: "staff" }),
     ]);
 
     guestToken = jwt.sign({ userId: guest._id }, process.env.JWT_SECRET);
+    guest2Token = jwt.sign({ userId: guest2._id }, process.env.JWT_SECRET);
     staffToken = jwt.sign({ userId: staff._id }, process.env.JWT_SECRET);
   });
 
@@ -122,6 +128,39 @@ describe("Reservation API", () => {
       expect(res.status).to.equal(200);
       expect(res.body.errors[0].message).to.match(/预约状态不正确/i);
     });
+
+    it("could cancel reservation", async () => {
+      const res = await guestQuery(`
+            mutation CancelReservation{
+                cancelReservation(id: "${testReservation._id}") {
+                  id
+                  status
+                }          
+            }
+        `);
+
+      expect(res.status).to.equal(200);
+      expect(res.body.data.cancelReservation.status).to.equal("CANCELLED");
+    });
+
+    it("could not cancel reservation not belong to the user", async () => {
+      const res = await queryGraphQL(
+        guest2Token,
+        `
+            mutation CancelReservation{
+                cancelReservation(id: "${testReservation._id}") {
+                  id
+                  status
+                }          
+            }
+        `
+      );
+
+      expect(res.status).to.equal(200);
+      expect(res.body.errors[0].message).to.match(
+        /找不到预约或您没有权限取消此预约/i
+      );
+    });
   });
 
   describe("Staff", () => {
@@ -156,6 +195,20 @@ describe("Reservation API", () => {
       expect(res.body.errors[0].message).to.match(
         /无法从 CANCELLED 变更为 APPROVED/i
       );
+    });
+
+    it("could cancel a reservation", async () => {
+      const res = await staffQuery(`
+            mutation CancelReservation{
+                cancelReservation(id: "${testReservation._id}") {
+                  id
+                  status
+                }          
+            }
+        `);
+
+      expect(res.status).to.equal(200);
+      expect(res.body.data.cancelReservation.status).to.equal("CANCELLED");
     });
   });
 });

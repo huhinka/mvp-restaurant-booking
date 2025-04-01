@@ -23,4 +23,8 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.methods.isStaff = function () {
+  return this.role === "staff";
+};
+
 export const User = mongoose.model("User", userSchema);

@@ -50,6 +50,16 @@ export const reservationResolvers = {
       }
     },
 
+    cancelReservation: async (_, { id }, { user }) => {
+      const reservation = await Reservation.findById(id);
+      if (!user._id.equals(reservation?.user._id) && !user.isStaff()) {
+        throw new Error("找不到预约或您没有权限取消此预约");
+      }
+
+      reservation.status = "CANCELLED";
+      return reservation.save();
+    },
+
     approveReservation: async (_, { id }, { user }) => {
       ensureStaff(user);
 
@@ -59,7 +69,7 @@ export const reservationResolvers = {
 };
 
 function ensureStaff(user) {
-  if (!user.role || user.role !== "staff") {
+  if (!user.isStaff()) {
     throw new Error("权限不足，您没有权限进行此操作");
   }
 }
