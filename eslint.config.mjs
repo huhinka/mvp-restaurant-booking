@@ -7,7 +7,7 @@ export default defineConfig([
   { files: ["apps/server/**/*.{js,mjs,cjs}"] },
   { files: ["apps/server/**/*.{js,mjs,cjs}"], languageOptions: { globals: globals.node } },
   {
-    files: ["apps/server/**/*.{js,mjs,cjs,json}"],
+    files: ["apps/server/**/*.{js,mjs,cjs}"],
     plugins: { js },
     extends: ["js/recommended"],
   },
@@ -30,4 +30,9 @@ export default defineConfig([
       ],
     },
   },
+
+  {
+    files: ["apps/web/**/*.ts"],
+    extends: ["next/core-web-vitals"]
+  }
 ]);
