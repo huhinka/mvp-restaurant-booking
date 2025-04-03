@@ -4,15 +4,15 @@ import js from "@eslint/js";
 import eslintPluginImport from "eslint-plugin-import";
 
 export default defineConfig([
-  { files: ["**/*.{js,mjs,cjs}"] },
-  { files: ["**/*.{js,mjs,cjs}"], languageOptions: { globals: globals.node } },
+  { files: ["apps/server/**/*.{js,mjs,cjs}"] },
+  { files: ["apps/server/**/*.{js,mjs,cjs}"], languageOptions: { globals: globals.node } },
   {
-    files: ["**/*.{js,mjs,cjs}"],
+    files: ["apps/server/**/*.{js,mjs,cjs,json}"],
     plugins: { js },
     extends: ["js/recommended"],
   },
   {
-    files: ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"], // 指定适用的文件类型
+    files: ["apps/server/**/*.js"],
     plugins: {
       import: eslintPluginImport, // 启用 import 插件
     },
