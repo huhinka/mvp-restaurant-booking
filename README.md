@@ -6,17 +6,17 @@
 
 ## 应用功能
 
-- [X] 用户登录、注册
-- [X] 客人预约餐厅
-- [X] 客人更新预约
-- [X] 客人取消预约
-- [X] 客人查看预约情况
-- [X] 餐厅员工查看预约情况
-- [X] 餐厅员工批准预约
-- [X] 餐厅员工取消预约
-- [X] 餐厅员工完成预约
+- [x] 用户登录、注册
+- [x] 客人预约餐厅
+- [x] 客人更新预约
+- [x] 客人取消预约
+- [x] 客人查看预约情况
+- [x] 餐厅员工查看预约情况
+- [x] 餐厅员工批准预约
+- [x] 餐厅员工取消预约
+- [x] 餐厅员工完成预约
 - [ ] Swagger API Doc
-- [X] docker compose
+- [x] docker compose
 - [ ] metrics
 - [ ] Solidjs SPA
 
@@ -31,20 +31,20 @@
 1. server：后端项目，使用 Node.js 框架，提供 RESTful 与 GraphQL 接口，处理业务逻辑，与数据库交互。
 2. web: 前端项目，SPA，使用 React 框架，提供用户界面，与后端接口交互。
 
-后端项目说明请参见 [后端项目说明](./packages/server/README.md)。
+后端项目说明请参见 [后端项目说明](./apps/server/README.md)。
 
 ## 组织结构
 
 ```
 project
+├── apps -- 项目目录
+|   ├── server -- 后端应用
+|   └── web -- 前端应用
 ├── docs -- 项目文档说明集合
 |   ├── images -- 这里面存放用于本文档的引用的图片
 |   ├── arch.mmd -- 整体架构图
 |   ├── event-storming.puml -- 事件风暴图
 |   └── lib-eventstorming.puml -- 事件风暴库
-├── packages -- 项目目录
-|   ├── server -- 服务端项目
-|   └── web -- 前端项目
 |── .gitignore -- 事件风暴库
 |── mvp-restaurant-booking.code-workspace -- vscode 工作区配置文件
 |── package-lock.json -- 包依赖锁文件
@@ -72,6 +72,7 @@ project
 ```bash
 docker compose up
 ```
+
 TODO 访问 http://localhost:3033 查看效果
 
 Copyright (c) 2022 Huhinka

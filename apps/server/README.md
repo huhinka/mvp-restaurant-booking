@@ -93,12 +93,14 @@ server
 ### 运行步骤
 
 运行开发环境：
+
 ```bash
 npm install
 npm run dev
 ```
 
 运行测试与覆盖率报告：
+
 ```bash
 npm run test
 npm run coverage
