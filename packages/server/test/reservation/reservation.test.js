@@ -59,7 +59,7 @@ describe("Reservation API", () => {
                 email: "new@test.com",
                 phone: "0987654321",
                 arrivalTime: "${new Date(
-                  Date.now() + 24 * 3600 * 1000
+                  Date.now() + 24 * 3600 * 1000,
                 ).toISOString()}",
                 partySize: 2
               }) {
@@ -157,12 +157,12 @@ describe("Reservation API", () => {
                   status
                 }          
             }
-        `
+        `,
       );
 
       expect(res.status).to.equal(200);
       expect(res.body.errors[0].message).to.match(
-        /找不到预约或您没有权限取消此预约/i
+        /找不到预约或您没有权限取消此预约/i,
       );
     });
 
@@ -208,7 +208,7 @@ describe("Reservation API", () => {
                 id
               }
             }
-        `
+        `,
       );
 
       expect(res.status).to.equal(200);
@@ -223,7 +223,7 @@ describe("Reservation API", () => {
                 id
               }
             }
-        `
+        `,
       );
 
       expect(res.status).to.equal(200);
@@ -261,7 +261,7 @@ describe("Reservation API", () => {
 
       expect(res.status).to.equal(200);
       expect(res.body.errors[0].message).to.match(
-        /无法从 CANCELLED 变更为 APPROVED/i
+        /无法从 CANCELLED 变更为 APPROVED/i,
       );
     });
 
@@ -311,7 +311,7 @@ describe("Reservation API", () => {
 
       expect(res.status).to.equal(200);
       expect(res.body.errors[0].message).to.match(
-        /无法从 REQUESTED 变更为 COMPLETED/i
+        /无法从 REQUESTED 变更为 COMPLETED/i,
       );
     });
 
@@ -335,12 +335,12 @@ describe("Reservation API", () => {
         await createTestReservation("APPROVED", new Date(baseTime.setDate(21)));
         await createTestReservation(
           "COMPLETED",
-          new Date(baseTime.setDate(19))
+          new Date(baseTime.setDate(19)),
         );
         await createTestReservation(
           "REQUESTED",
           // setHours will change the date, so we need to set the date first
-          new Date(baseTime.setHours(10))
+          new Date(baseTime.setHours(10)),
         );
       });
 
@@ -370,7 +370,7 @@ describe("Reservation API", () => {
             statuses: ["REQUESTED", "APPROVED"],
             start: "2025-03-10T00:00:00Z",
             end: "2025-03-20T23:59:59Z",
-          }
+          },
         );
 
         expect(res.status).to.equal(200);
@@ -398,7 +398,7 @@ describe("Reservation API", () => {
                   partySize
               }
             }
-        `
+        `,
         );
 
         expect(res.status).to.equal(200);
@@ -424,7 +424,7 @@ describe("Reservation API", () => {
           {
             start: "2025-03-19T00:00:00Z",
             end: "2025-03-19T00:00:00Z",
-          }
+          },
         );
 
         expect(res.status).to.equal(200);

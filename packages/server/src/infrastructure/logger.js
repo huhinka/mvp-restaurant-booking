@@ -29,23 +29,23 @@ export const log = winston.createLogger({
     winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
     winston.format.errors({ stack: true }),
     winston.format.splat(),
-    winston.format.json()
+    winston.format.json(),
   ),
   defaultMeta: { service: "mvp-restaurant-booking" },
   transports: [
     new winston.transports.DailyRotateFile(
-      transportOption(process.env.LOGGER_ERROR_FILE || "logs/error.log", true)
+      transportOption(process.env.LOGGER_ERROR_FILE || "logs/error.log", true),
     ),
     new winston.transports.DailyRotateFile(
-      transportOption(process.env.LOGGER_COMBINED_FILE || "logs/combined.log")
+      transportOption(process.env.LOGGER_COMBINED_FILE || "logs/combined.log"),
     ),
     new winston.transports.Console({
       format: winston.format.combine(
         winston.format.colorize(),
         winston.format.align(),
         winston.format.printf(
-          (info) => `${info.timestamp} ${info.level}: ${info.message}`
-        )
+          (info) => `${info.timestamp} ${info.level}: ${info.message}`,
+        ),
       ),
     }),
   ],

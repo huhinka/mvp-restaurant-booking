@@ -24,7 +24,7 @@ export const reservationResolvers = {
 
       if (statuses?.length) {
         const invalidStatus = statuses.find(
-          (s) => !reservationStatuses.includes(s)
+          (s) => !reservationStatuses.includes(s),
         );
         if (invalidStatus) throw new Error(`无效状态值: ${invalidStatus}`);
         query.status = { $in: statuses };

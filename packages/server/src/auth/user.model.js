@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
       sparse: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 userSchema.methods.isStaff = function () {

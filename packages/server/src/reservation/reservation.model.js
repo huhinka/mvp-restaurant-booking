@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 
-export const reservationStatuses = ["REQUESTED", "APPROVED", "CANCELLED", "COMPLETED"];
+export const reservationStatuses = [
+  "REQUESTED",
+  "APPROVED",
+  "CANCELLED",
+  "COMPLETED",
+];
 
 const reservationSchema = new mongoose.Schema(
   {
@@ -41,7 +46,7 @@ const reservationSchema = new mongoose.Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export const Reservation = mongoose.model("Reservation", reservationSchema);
