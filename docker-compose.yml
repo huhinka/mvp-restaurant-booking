@@ -1,0 +1,27 @@
+version: "3" # docker-compose version
+services:
+  mongo:
+    image: mongo:4.4.5
+    ports:
+      # 27018 避免与本地 MongoDB 端口冲突，或可直接不暴露端口
+      - "27018:27017"
+    volumes:
+      - volume-mongo:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+
+  server:
+    image: mvp-restaurant-booking-server:latest
+    ports:
+      - "3030:3030"
+    volumes:
+      - volume-server-log:/app/logs
+    depends_on:
+      - mongo
+    environment:
+      - MONGODB_URI=mongodb://admin:admin@mongo:27017/mvp-restaurant-booking?authSource=admin
+
+volumes:
+  volume-mongo: {}
+  volume-server-log: {}
