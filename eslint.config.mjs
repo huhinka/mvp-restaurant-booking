@@ -30,9 +30,4 @@ export default defineConfig([
       ],
     },
   },
-
-  {
-    files: ["apps/web/**/*.ts"],
-    extends: ["next/core-web-vitals"]
-  }
 ]);
