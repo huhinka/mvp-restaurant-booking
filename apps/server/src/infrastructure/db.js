@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { log } from "./logger.js";
+import { migrateDb } from "./db-migrate.js";
 /**
  * 连接并初始化数据库。
  */
@@ -24,6 +25,8 @@ export async function connectDb(mongodbUrl) {
     autoIndex: false,
     readPreference: "primary",
   });
+
+  await migrateDb();
 
   log.info(`${mongodb} connected`);
 

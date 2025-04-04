@@ -34,6 +34,15 @@ describe("Authentication API", () => {
       expect(res.status).to.equal(400);
       expect(res.body.error).to.match(/"email" must be a valid email/i);
     });
+
+    it("should 400 with duplicated email", async () => {
+      await request(app).post("/auth/register").send(testUser);
+
+      const res = await request(app).post("/auth/register").send(testUser);
+
+      expect(res.status).to.equal(400);
+      expect(res.body.error.message).to.match(/该邮箱或手机号已注册/i);
+    });
   });
 
   describe("POST /auth/login", () => {

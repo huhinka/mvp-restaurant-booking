@@ -1,9 +1,11 @@
+import bcrypt from "bcrypt";
 import express from "express";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
-import { User } from "./user.model.js";
+import { MongoError } from "mongodb";
 import { log } from "../infrastructure/logger.js";
-import { validateRegister, validateLogin } from "./validators.js";
+import { AuthError } from "./auth.error.js";
+import { User } from "./user.model.js";
+import { validateLogin, validateRegister } from "./validators.js";
 
 export const router = express.Router();
 
@@ -28,6 +30,7 @@ router.post("/register", async (req, res) => {
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
+      // TODO 添加刷新 token
       { expiresIn: "8h" },
     );
 
@@ -37,8 +40,11 @@ router.post("/register", async (req, res) => {
       token,
     });
   } catch (err) {
-    log.error(`register failed: ${err.message}`);
-    res.status(400).json({ error: "Registration failed" });
+    if (err instanceof MongoError && err.code === 11000) {
+      throw new AuthError("该邮箱或手机号已注册", 400);
+    }
+
+    throw err;
   }
 });
 
@@ -59,6 +65,7 @@ router.post("/login", async (req, res) => {
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
+      // TODO 添加刷新 token
       { expiresIn: "8h" },
     );
 

@@ -32,6 +32,8 @@
 
 ```
 server
+├── migrations -- 数据库迁移脚本
+|   ├── 20250404044758-create_user_index.js -- 创建用户索引
 ├── src -- 源代码
 |   ├── auth -- 认证鉴权相关模块
 |   |   ├── auth.middleware.js -- 认证鉴权中间件
@@ -73,6 +75,7 @@ server
 | GraphQL       | 可以精确返回指定字段的 API 查询语言 | https://expressjs.com                            |
 | Apollo Server | 开源的，符合规范的 GraphQL 服务器   | https://www.apollographql.com/docs/apollo-server |
 | Mongoose ORM  | 优雅的 MongoDB 对象建模             | https://mongoosejs.com                           |
+| migrate-mongo | 数据库迁移工具                      | https://github.com/seppevs/migrate-mongo#readme  |
 | mocha         | 功能丰富的 JavaScript 测试框架      | https://mochajs.org                              |
 | chai          | BDD/TDD 断言库                      | https://www.chaijs.com                           |
 | sinon         | 独立的测试 spies、stubs 与 mocks 库 | https://sinonjs.org                              |
@@ -110,8 +113,17 @@ npm run coverage
 
 ### 开发注意点
 
-1. ....
-2. ....
+#### 数据库索引及内置数据创建
+
+在 `src/infrastructure/db.js` 文件中，我们使用了 `migrate-mongo` 工具来创建数据库索引和内置数据。在 `migrate-mongo` 配置文件中，我们定义了数据库迁移脚本的位置和顺序。在 `src/infrastructure/db.js` 文件中，我们使用 `migrate-mongo` 工具来执行数据库迁移脚本，并创建数据库索引和内置数据。
+
+运行下面命令创建迁移脚本：
+
+```bash
+npm run migrate:create -- <your-migration-name>
+```
+
+在 `migrations` 目录下找到迁移脚本，修改脚本内容，然后在程序启动时会自动执行迁移操作，如果遇到异常程序会直接退出。
 
 ### 遗留问题
 
