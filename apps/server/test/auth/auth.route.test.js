@@ -9,6 +9,7 @@ describe("Authentication API", () => {
   const testUser = {
     email: "test@example.com",
     password: "ValidPass123!",
+    phone: "13612344312",
   };
 
   beforeEach(async () => {
@@ -32,7 +33,49 @@ describe("Authentication API", () => {
         .send({ ...testUser, email: "invalid-email" });
 
       expect(res.status).to.equal(400);
-      expect(res.body.error).to.match(/"email" must be a valid email/i);
+      expect(res.body.message).to.match(/参数错误/i);
+      expect(res.body.errors.email).to.match(/请输入有效的邮箱/i);
+    });
+
+    it("should 400 with empty email", async () => {
+      const res = await request(app)
+        .post("/auth/register")
+        .send({ ...testUser, email: "" });
+
+      expect(res.status).to.equal(400);
+      expect(res.body.message).to.match(/参数错误/i);
+      console.log(res.body.errors);
+      expect(res.body.errors.email).to.match(/请输入邮箱/i);
+    });
+
+    it("should 400 with invalid phone", async () => {
+      const res = await request(app)
+        .post("/auth/register")
+        .send({ ...testUser, phone: "foo" });
+
+      expect(res.status).to.equal(400);
+      expect(res.body.message).to.match(/参数错误/i);
+      expect(res.body.errors.phone).to.match(/请输入有效的手机号码/i);
+    });
+
+    it("should 400 with empty phone", async () => {
+      const res = await request(app)
+        .post("/auth/register")
+        .send({ ...testUser, phone: "" });
+
+      expect(res.status).to.equal(400);
+      expect(res.body.message).to.match(/参数错误/i);
+      expect(res.body.errors.phone).to.match(/请输入手机号码/i);
+    });
+
+    it("should 400 with invalid password", async () => {
+      const res = await request(app)
+        .post("/auth/register")
+        .send({ ...testUser, password: "short" });
+
+      expect(res.status).to.equal(400);
+      expect(res.body.message).to.match(/参数错误/i);
+      expect(res.body.errors.password).to.match(/密码长度不能小于/i);
     });
 
     it("should 400 with duplicated email", async () => {
@@ -41,7 +84,7 @@ describe("Authentication API", () => {
       const res = await request(app).post("/auth/register").send(testUser);
 
       expect(res.status).to.equal(400);
-      expect(res.body.error.message).to.match(/该邮箱或手机号已注册/i);
+      expect(res.body.message).to.match(/该邮箱或手机号已注册/i);
     });
   });
 
