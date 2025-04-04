@@ -2,10 +2,9 @@ import bcrypt from "bcrypt";
 import express from "express";
 import jwt from "jsonwebtoken";
 import { MongoError } from "mongodb";
-import { log } from "../infrastructure/logger.js";
 import { AuthError } from "./auth.error.js";
 import { User } from "./user.model.js";
-import { registerValidator, validateLogin } from "./validators.js";
+import { loginValidator, registerValidator } from "./validators.js";
 
 export const router = express.Router();
 
@@ -35,6 +34,7 @@ router.post("/register", registerValidator, async (req, res) => {
       token,
     });
   } catch (err) {
+    // TODO 这个异常检测应该在上面 User.create 上处理，而不是全局
     if (err instanceof MongoError && err.code === 11000) {
       throw new AuthError("该邮箱或手机号已注册", 400);
     }
@@ -43,34 +43,26 @@ router.post("/register", registerValidator, async (req, res) => {
   }
 });
 
-router.post("/login", async (req, res) => {
-  try {
-    const { error } = validateLogin(req.body);
-    if (error) {
-      return res.status(400).json({ error: error.details[0].message });
-    }
+router.post("/login", loginValidator, async (req, res) => {
+  const { identifier, password } = req.body;
 
-    const { email, password } = req.body;
-
-    const user = await User.findOne({ email });
-    if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ error: "Invalid credentials" });
-    }
-
-    const token = jwt.sign(
-      { userId: user._id, role: user.role },
-      process.env.JWT_SECRET,
-      // TODO 添加刷新 token
-      { expiresIn: "8h" },
-    );
-
-    res.json({
-      userId: user._id,
-      role: user.role,
-      token,
-    });
-  } catch (err) {
-    log.error(`login failed: ${err.message}`);
-    res.status(500).json({ error: "Login failed" });
+  const user = await User.findOne({
+    $or: [{ email: identifier }, { phone: identifier }],
+  });
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    throw new AuthError("账号密码有误");
   }
+
+  const token = jwt.sign(
+    { userId: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    // TODO 添加刷新 token
+    { expiresIn: "8h" },
+  );
+
+  res.json({
+    userId: user._id,
+    role: user.role,
+    token,
+  });
 });

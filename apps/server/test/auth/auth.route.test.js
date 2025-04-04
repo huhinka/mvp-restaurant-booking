@@ -95,7 +95,7 @@ describe("Authentication API", () => {
 
     it("should 200 with valid token", async () => {
       const res = await request(app).post("/auth/login").send({
-        email: testUser.email,
+        identifier: testUser.email,
         password: testUser.password,
       });
 
@@ -105,12 +105,83 @@ describe("Authentication API", () => {
 
     it("should 401 with wrong password", async () => {
       const res = await request(app).post("/auth/login").send({
-        email: testUser.email,
+        identifier: testUser.email,
         password: "wrong-password",
       });
 
+      console.log(res.body);
       expect(res.status).to.equal(401);
-      expect(res.body.error).to.match(/invalid credentials/i);
+      expect(res.body.message).to.match(/账号密码有误/i);
+    });
+
+    it("should 401 with wrong email", async () => {
+      const res = await request(app).post("/auth/login").send({
+        identifier: "wrong-email@example.com",
+        password: testUser.password,
+      });
+
+      expect(res.status).to.equal(401);
+      expect(res.body.message).to.match(/账号密码有误/i);
+    });
+
+    it("should 401 with wrong phone", async () => {
+      const res = await request(app).post("/auth/login").send({
+        identifier: "13612344311",
+        password: testUser.password,
+      });
+
+      expect(res.status).to.equal(401);
+      expect(res.body.message).to.match(/账号密码有误/i);
+    });
+
+    it("should 400 with empty identifier", async () => {
+      const res = await request(app).post("/auth/login").send({
+        identifier: "",
+        password: testUser.password,
+      });
+
+      expect(res.status).to.equal(400);
+      expect(res.body.message).to.match(/参数错误/i);
+      expect(res.body.errors.identifier).to.match(
+        /请输入有效的邮箱或手机号码/i,
+      );
+    });
+
+    it("should 400 with empty password", async () => {
+      const res = await request(app).post("/auth/login").send({
+        identifier: testUser.email,
+        password: "",
+      });
+
+      expect(res.status).to.equal(400);
+      expect(res.body.message).to.match(/参数错误/i);
+      expect(res.body.errors.password).to.match(/请输入密码/i);
+    });
+
+    it("should 400 with invalid email", async () => {
+      const res = await request(app).post("/auth/login").send({
+        identifier: "invalid-email",
+        password: testUser.password,
+      });
+
+      expect(res.status).to.equal(400);
+      expect(res.body.message).to.match(/参数错误/i);
+      expect(res.body.errors.identifier).to.match(
+        /请输入有效的邮箱或手机号码/i,
+      );
+    });
+
+    it("should 400 with invalid phone", async () => {
+      const res = await request(app).post("/auth/login").send({
+        identifier: "00abc",
+        password: testUser.password,
+      });
+
+      expect(res.status).to.equal(400);
+      expect(res.body.message).to.match(/参数错误/i);
+      expect(res.body.errors.identifier).to.match(
+        /请输入有效的邮箱或手机号码/i,
+      );
     });
   });
 });
