@@ -1,8 +1,9 @@
-import express from "express";
-import helmet from "helmet";
 import cors from "cors";
-import errorHandler from "./infrastructure/error-handler.js";
+import express from "express";
+import "express-async-errors";
+import helmet from "helmet";
 import { router as authRouter } from "./auth/auth.route.js";
+import errorHandler from "./infrastructure/error-handler.js";
 import { reservationRouters } from "./reservation/reservation.graphql.js";
 
 export const app = express();
