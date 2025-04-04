@@ -24,3 +24,9 @@ process.on("SIGINT", () => {
 process.on("exit", (code) => {
   log.info(`Process exited with code ${code}`);
 });
+
+process.on("uncaughtException", (err) => {
+  console.error("未捕获异常:", err);
+  // 快速失败
+  process.exit(1);
+});
