@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useState } from "react";
+import { Pagination } from "@/components/pagination";
 
 const statusVariant: Record<
   string,
@@ -25,8 +27,34 @@ const statusVariant: Record<
   COMPLETED: "outline",
 };
 
+interface Reservation {
+  id: string;
+  guestName: string;
+  email: string;
+  phone: string;
+  arrivalTime: string;
+  partySize: number;
+  status: string;
+}
+
+const DEFAULT_PAGE_SIZE = 10;
+
 export default function MyReservations() {
-  const { data, loading, error } = useQuery(GET_MY_RESERVATIONS);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [limit, setLimit] = useState(DEFAULT_PAGE_SIZE);
+
+  const { data, loading, error } = useQuery(GET_MY_RESERVATIONS, {
+    variables: {
+      page: currentPage,
+      limit: limit,
+    },
+    fetchPolicy: "cache-and-network",
+  });
+
+  const handlePageChange = (newPage: number, newLimit: number) => {
+    setCurrentPage(newPage);
+    setLimit(newLimit);
+  };
 
   return (
     <AuthRoute>
@@ -48,7 +76,7 @@ export default function MyReservations() {
 
             <TableBody>
               {loading ? (
-                Array.from({ length: 3 }).map((_, i) => (
+                Array.from({ length: limit }).map((_, i) => (
                   <TableRow key={i}>
                     <TableCell>
                       <Skeleton className="h-4 w-[80px]" />
@@ -76,23 +104,23 @@ export default function MyReservations() {
                     加载失败: {error.message}
                   </TableCell>
                 </TableRow>
-              ) : data?.myReservations?.length === 0 ? (
+              ) : data?.myReservations?.items.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center">
                     暂无预约记录
                   </TableCell>
                 </TableRow>
               ) : (
-                data?.myReservations?.map((reservation) => (
+                data?.myReservations?.items.map((reservation: Reservation) => (
                   <TableRow key={reservation.id}>
                     <TableCell className="font-medium">
                       #{reservation.id.slice(0, 8)}
                     </TableCell>
                     <TableCell>{reservation.guestName}</TableCell>
-                    <TableCell>{reservation.guestPhone}</TableCell>
+                    <TableCell>{reservation.phone}</TableCell>
                     <TableCell>
                       {format(
-                        new Date(reservation.expectedArrivalTime),
+                        new Date(reservation.arrivalTime),
                         "yyyy-MM-dd HH:mm",
                       )}
                     </TableCell>
@@ -109,6 +137,13 @@ export default function MyReservations() {
               )}
             </TableBody>
           </Table>
+
+          <Pagination
+            current={currentPage}
+            total={data?.myReservations?.pageInfo?.totalItems || 0}
+            pageSize={limit}
+            onChange={handlePageChange}
+          />
         </div>
       </div>
     </AuthRoute>
