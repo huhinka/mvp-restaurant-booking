@@ -84,7 +84,6 @@ export function ReservationForm({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        {/* 保持原有表单字段不变 */}
         <FormField
           control={form.control}
           name="guestName"
