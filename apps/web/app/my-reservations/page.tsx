@@ -17,6 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { Pagination } from "@/components/pagination";
 import { EditReservationDialog } from "@/components/edit-reservation-dialog";
+import { CancelReservationDialog } from "@/components/cancel-reservation-dialog";
 
 const statusVariant: Record<
   string,
@@ -72,6 +73,7 @@ export default function MyReservations() {
                 <TableHead>预计到达时间</TableHead>
                 <TableHead>人数</TableHead>
                 <TableHead className="text-right">状态</TableHead>
+                <TableHead className="text-right">操作</TableHead>
               </TableRow>
             </TableHeader>
 
@@ -135,6 +137,11 @@ export default function MyReservations() {
                     </TableCell>
                     <TableCell className="text-right">
                       <EditReservationDialog reservation={reservation} />
+                      <CancelReservationDialog
+                        reservationId={reservation.id}
+                        currentStatus={reservation.status}
+                        onSuccess={() => {}}
+                      />
                     </TableCell>
                   </TableRow>
                 ))

@@ -44,3 +44,13 @@ export type ReservationUpdateInput = {
   arrivalTime: string;
   tableSize: number;
 };
+
+export const CANCEL_RESERVATION = gql`
+  mutation CancelReservation($id: ID!, $reason: String!) {
+    cancelReservation(id: $id, reason: $reason) {
+      id
+      status
+      cancellationReason
+    }
+  }
+`;
