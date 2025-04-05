@@ -41,6 +41,8 @@ export const reservationResolvers = {
         .skip((page - 1) * pageSize)
         .sort({ arrivalTime: 1 });
     },
+
+    me: async (_, __, { user }) => user,
   },
 
   Mutation: {

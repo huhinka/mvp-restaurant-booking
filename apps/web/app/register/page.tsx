@@ -54,7 +54,7 @@ export default function Register() {
 
       const res = await apiClient.post("/auth/register", submitValues);
       localStorage.setItem("token", res.data.token);
-      window.location.href = "/";
+      window.location.href = "/my-reservations";
     } catch (error) {
       handleApiError(error, form.setError, (message) =>
         setGlobalError(message),

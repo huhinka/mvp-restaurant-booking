@@ -43,7 +43,7 @@ export default function Login() {
     try {
       const res = await apiClient.post("/auth/login", values);
       localStorage.setItem("token", res.data.token);
-      window.location.href = "/";
+      window.location.href = "/my-reservations";
     } catch (error) {
       handleApiError(error, form.setError, (message) =>
         setGlobalError(message),
