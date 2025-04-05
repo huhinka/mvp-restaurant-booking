@@ -1,4 +1,3 @@
-// app/staff/reservations/page.tsx
 "use client";
 
 import { CancelReservationDialog } from "@/components/cancel-reservation-dialog";
@@ -6,12 +5,19 @@ import { DateTimePicker } from "@/components/date-time-picker";
 import { Pagination } from "@/components/pagination";
 import StaffRoute from "@/components/staff-route";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { GET_RESERVATIONS } from "@/queries/reservation";
+import { useToast } from "@/hooks/use-toast";
+import {
+  APPROVE_RESERVATION,
+  CANCEL_RESERVATION,
+  COMPLETE_RESERVATION,
+  GET_RESERVATIONS,
+} from "@/queries/reservation";
 import { statusVariant } from "@/types/reservation";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import { endOfDay, format, startOfDay } from "date-fns";
 import { useState } from "react";
 
@@ -33,12 +39,13 @@ interface Reservation {
   createdAt: string;
 }
 
-export default function ReservationsPage() {
+export default function Reservations() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [filter, setFilter] = useState<FilterState>({
     statuses: [],
   });
+  const { toast } = useToast();
 
   const { data, loading, error, refetch } = useQuery(GET_RESERVATIONS, {
     variables: {
@@ -56,6 +63,43 @@ export default function ReservationsPage() {
     },
     fetchPolicy: "cache-and-network",
   });
+
+  const [approveReservation] = useMutation(APPROVE_RESERVATION);
+  const [completeReservation] = useMutation(COMPLETE_RESERVATION);
+  const [cancelReservation] = useMutation(CANCEL_RESERVATION);
+
+  const handleAction = async (
+    action: "approve" | "complete" | "cancel",
+    id: string,
+    reason?: string,
+  ) => {
+    try {
+      let mutation;
+      switch (action) {
+        case "approve":
+          mutation = approveReservation;
+          break;
+        case "complete":
+          mutation = completeReservation;
+          break;
+        case "cancel":
+          mutation = cancelReservation;
+          break;
+      }
+
+      await mutation({
+        variables: { id, ...(reason && { reason }) },
+      });
+
+      toast({ title: `操作成功` });
+      refetch();
+    } catch (error) {
+      toast({
+        title: "操作失败",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleStatusChange = (status: string) => {
     setFilter((prev) => ({
@@ -202,12 +246,45 @@ export default function ReservationsPage() {
                         {reservation.status.toLowerCase()}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3">
-                      <CancelReservationDialog
-                        reservationId={reservation.id}
-                        currentStatus={reservation.status}
-                        onSuccess={() => {}}
-                      />
+                    <td className="p-4 space-x-2">
+                      {reservation.status === "REQUESTED" && (
+                        <>
+                          <Button
+                            size="sm"
+                            onClick={() =>
+                              handleAction("approve", reservation.id)
+                            }
+                          >
+                            确认
+                          </Button>
+                          <CancelReservationDialog
+                            reservationId={reservation.id}
+                            currentStatus={reservation.status}
+                            onSuccess={refetch}
+                          />
+                        </>
+                      )}
+                      {reservation.status === "APPROVED" && (
+                        <>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() =>
+                              handleAction("complete", reservation.id)
+                            }
+                          >
+                            完成
+                          </Button>
+                          <CancelReservationDialog
+                            reservationId={reservation.id}
+                            currentStatus={reservation.status}
+                            onSuccess={refetch}
+                          />
+                        </>
+                      )}
+                      {!["REQUESTED", "APPROVED"].includes(
+                        reservation.status,
+                      ) && <span className="text-gray-400">无可用操作</span>}
                     </td>
                   </tr>
                 ))

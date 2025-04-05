@@ -83,3 +83,20 @@ export const GET_RESERVATIONS = gql`
     }
   }
 `;
+
+export const APPROVE_RESERVATION = gql`
+  mutation ApproveReservation($id: ID!) {
+    approveReservation(id: $id) {
+      id
+    }
+  }
+`;
+
+export const COMPLETE_RESERVATION = gql`
+  mutation CompleteReservation($id: ID!) {
+    completeReservation(id: $id) {
+      id
+      status
+    }
+  }
+`;
