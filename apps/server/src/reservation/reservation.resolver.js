@@ -115,13 +115,14 @@ export const reservationResolvers = {
       }
     },
 
-    cancelReservation: async (_, { id }, { user }) => {
+    cancelReservation: async (_, { id, reason }, { user }) => {
       const reservation = await Reservation.findById(id);
       if (!user._id.equals(reservation?.user._id) && !user.isStaff()) {
         throw new Error("找不到预约或您没有权限取消此预约");
       }
 
       reservation.status = "CANCELLED";
+      reservation.cancellationReason = reason;
       return reservation.save();
     },
 

@@ -8,7 +8,7 @@ export const reservationSchema = `#graphql
   type Mutation {
     createReservation(input: ReservationInput!): Reservation!
     updateReservation(id: ID!, input: ReservationUpdateInput!): Reservation!
-    cancelReservation(id: ID!): Reservation!
+    cancelReservation(id: ID!, reason: String!): Reservation!
     approveReservation(id: ID!): Reservation!
     completeReservation(id: ID!): Reservation!
   }
@@ -39,6 +39,7 @@ export const reservationSchema = `#graphql
     tableSize: Int!
     status: ReservationStatus!
     user: ID!
+    cancellationReason: String
     createdAt: DateTime!
     updatedAt: DateTime!
   }

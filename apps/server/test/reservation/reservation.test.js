@@ -42,8 +42,8 @@ describe("Reservation API", () => {
     await Reservation.deleteMany({});
   });
 
-  async function guestQuery(query) {
-    return await queryGraphQL(guestToken, query);
+  async function guestQuery(query, variables = {}) {
+    return await queryGraphQL(guestToken, query, variables);
   }
 
   async function staffQuery(query, variables = {}) {
@@ -134,17 +134,27 @@ describe("Reservation API", () => {
     });
 
     it("could cancel reservation", async () => {
-      const res = await guestQuery(`
-            mutation CancelReservation{
-                cancelReservation(id: "${testReservation._id}") {
+      const res = await guestQuery(
+        `
+            mutation CancelReservation($id: ID!, $reason: String!) {
+                cancelReservation(id: $id, reason: $reason) {
                   id
                   status
+                  cancellationReason
                 }          
             }
-        `);
+        `,
+        {
+          id: testReservation._id,
+          reason: "test reason",
+        },
+      );
 
       expect(res.status).to.equal(200);
       expect(res.body.data.cancelReservation.status).to.equal("CANCELLED");
+      expect(res.body.data.cancelReservation.cancellationReason).to.equal(
+        "test reason",
+      );
     });
 
     it("could not cancel reservation not belong to the user", async () => {
@@ -152,7 +162,7 @@ describe("Reservation API", () => {
         guest2Token,
         `
             mutation CancelReservation{
-                cancelReservation(id: "${testReservation._id}") {
+                cancelReservation(id: "${testReservation._id}", reason: "test reason") {
                   id
                   status
                 }          
@@ -293,15 +303,19 @@ describe("Reservation API", () => {
     it("could cancel a reservation", async () => {
       const res = await staffQuery(`
             mutation CancelReservation{
-                cancelReservation(id: "${testReservation._id}") {
+                cancelReservation(id: "${testReservation._id}", reason: "test") {
                   id
                   status
+                  cancellationReason
                 }          
             }
         `);
 
       expect(res.status).to.equal(200);
       expect(res.body.data.cancelReservation.status).to.equal("CANCELLED");
+      expect(res.body.data.cancelReservation.cancellationReason).to.equal(
+        "test",
+      );
     });
 
     it("could complete a reservation", async () => {

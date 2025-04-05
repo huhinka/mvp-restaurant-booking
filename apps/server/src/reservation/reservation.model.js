@@ -46,6 +46,10 @@ const reservationSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    cancellationReason: {
+      type: String,
+      required: false,
+    },
   },
   { timestamps: true },
 );
