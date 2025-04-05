@@ -1,20 +1,19 @@
 // app/staff/reservations/page.tsx
 "use client";
 
-import { Calendar } from "@/components/calendar";
+import { CancelReservationDialog } from "@/components/cancel-reservation-dialog";
+import { DateTimePicker } from "@/components/date-time-picker";
 import { Pagination } from "@/components/pagination";
 import StaffRoute from "@/components/staff-route";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { GET_RESERVATIONS } from "@/queries/reservation";
+import { statusVariant } from "@/types/reservation";
 import { useQuery } from "@apollo/client";
 import { endOfDay, format, startOfDay } from "date-fns";
 import { useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
-import { statusVariant } from "@/types/reservation";
-import { Label } from "@/components/ui/label";
-import { DateTimePicker } from "@/components/date-time-picker";
 
 interface FilterState {
   startDate?: Date;
@@ -130,16 +129,22 @@ export default function ReservationsPage() {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                {["姓名", "联系方式", "预约时间", "人数", "状态"].map(
-                  (header) => (
-                    <th
-                      key={header}
-                      className="px-4 py-3 text-left text-sm font-medium"
-                    >
-                      {header}
-                    </th>
-                  ),
-                )}
+                {[
+                  "ID",
+                  "姓名",
+                  "联系方式",
+                  "预约时间",
+                  "人数",
+                  "状态",
+                  "操作",
+                ].map((header) => (
+                  <th
+                    key={header}
+                    className="px-4 py-3 text-left text-sm font-medium"
+                  >
+                    {header}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
@@ -177,6 +182,7 @@ export default function ReservationsPage() {
                     key={reservation.id}
                     className="border-t hover:bg-gray-50"
                   >
+                    <td className="px-4 py-3">{reservation.id}</td>
                     <td className="px-4 py-3">{reservation.guestName}</td>
                     <td className="px-4 py-3">
                       <div>{reservation.email}</div>
@@ -195,6 +201,13 @@ export default function ReservationsPage() {
                       >
                         {reservation.status.toLowerCase()}
                       </Badge>
+                    </td>
+                    <td className="px-4 py-3">
+                      <CancelReservationDialog
+                        reservationId={reservation.id}
+                        currentStatus={reservation.status}
+                        onSuccess={() => {}}
+                      />
                     </td>
                   </tr>
                 ))
