@@ -12,7 +12,6 @@ export default function AuthRoute({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!loading && !data?.me) {
-      console.log(`data: ${data}`);
       router.push("/login");
     }
   }, [data, loading, router]);

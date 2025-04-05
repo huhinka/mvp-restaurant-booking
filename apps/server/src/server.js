@@ -26,7 +26,8 @@ process.on("exit", (code) => {
 });
 
 process.on("uncaughtException", (err) => {
-  console.error("未捕获异常:", err);
+  log.error(`未捕获异常: ${err.stack}`);
+
   // 快速失败
   process.exit(1);
 });

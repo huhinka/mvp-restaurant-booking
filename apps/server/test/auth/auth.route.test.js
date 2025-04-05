@@ -44,7 +44,6 @@ describe("Authentication API", () => {
 
       expect(res.status).to.equal(400);
       expect(res.body.message).to.match(/参数错误/i);
-      console.log(res.body.errors);
       expect(res.body.errors.email).to.match(/请输入邮箱/i);
     });
 
@@ -128,7 +127,6 @@ describe("Authentication API", () => {
         password: "wrong-password",
       });
 
-      console.log(res.body);
       expect(res.status).to.equal(401);
       expect(res.body.message).to.match(/账号密码有误/i);
     });
