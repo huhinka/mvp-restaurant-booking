@@ -183,7 +183,7 @@ describe("Reservation API", () => {
     it("could view guest owner reservations", async () => {
       const res = await guestQuery(`
             query Reservations{
-              myReservations(page: 1, pageSize: 10) {
+              myReservations(page: 1, limit: 10) {
                 id
                 status
                 guestName
@@ -204,7 +204,7 @@ describe("Reservation API", () => {
         guest2Token,
         `
             query Reservations{
-              myReservations(page: 1, pageSize: 10) {
+              myReservations(page: 1, limit: 10) {
                 id
               }
             }
@@ -219,7 +219,7 @@ describe("Reservation API", () => {
       const res = await guestQuery(
         `
             query Reservations{
-              reservations(page: 1, pageSize: 10, filter: {}) {
+              reservations(page: 1, limit: 10, filter: {}) {
                 id
               }
             }
@@ -349,7 +349,7 @@ describe("Reservation API", () => {
           `
             query Reservations ($statuses: [ReservationStatus!], $start: DateTime!, $end: DateTime!) {
               reservations(page: 1,
-                  pageSize: 10, 
+                  limit: 10, 
                   filter: {
                     startDate: $start, 
                     endDate: $end,
@@ -382,7 +382,7 @@ describe("Reservation API", () => {
           `
             query Reservations ($statuses: [ReservationStatus!], $start: DateTime, $end: DateTime) {
               reservations(page: 1,
-                  pageSize: 10, 
+                  limit: 10, 
                   filter: {
                     startDate: $start, 
                     endDate: $end,
@@ -410,7 +410,7 @@ describe("Reservation API", () => {
           `
             query Reservations ($statuses: [ReservationStatus!], $start: DateTime!, $end: DateTime!) {
               reservations(page: 1,
-                  pageSize: 10, 
+                  limit: 10, 
                   filter: {
                     startDate: $start, 
                     endDate: $end,

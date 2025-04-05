@@ -1,7 +1,7 @@
 export const reservationSchema = `#graphql
   type Query {
-    myReservations(page: Int, pageSize: Int): [Reservation!]!
-    reservations(page: Int, pageSize: Int, filter: ReservationFilterInput): [Reservation!]!
+    myReservations(page: Int, limit: Int): [Reservation!]!
+    reservations(page: Int, limit: Int, filter: ReservationFilterInput): [Reservation!]!
     me: User!
   }
 

@@ -10,13 +10,13 @@ const statusTransitionMap = {
 
 export const reservationResolvers = {
   Query: {
-    myReservations: async (_, { page = 1, pageSize = 10 }, { user }) => {
+    myReservations: async (_, { page = 1, limit = 10 }, { user }) => {
       return Reservation.find({ user: user._id })
-        .limit(pageSize)
-        .skip((page - 1) * pageSize);
+        .limit(limit)
+        .skip((page - 1) * limit);
     },
 
-    reservations: async (_, { page = 1, pageSize = 10, filter }, { user }) => {
+    reservations: async (_, { page = 1, limit = 10, filter }, { user }) => {
       ensureStaff(user);
 
       const { startDate, endDate, statuses } = filter;
@@ -37,8 +37,8 @@ export const reservationResolvers = {
       }
 
       return Reservation.find(query)
-        .limit(pageSize)
-        .skip((page - 1) * pageSize)
+        .limit(limit)
+        .skip((page - 1) * limit)
         .sort({ arrivalTime: 1 });
     },
 
