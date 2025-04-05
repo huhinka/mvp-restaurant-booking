@@ -22,3 +22,25 @@ export const GET_MY_RESERVATIONS = gql`
     }
   }
 `;
+
+export const UPDATE_RESERVATION = gql`
+  mutation UpdateReservation($id: ID!, $input: ReservationUpdateInput!) {
+    updateReservation(id: $id, input: $input) {
+      id
+      guestName
+      email
+      phone
+      arrivalTime
+      tableSize
+      status
+    }
+  }
+`;
+
+export type ReservationUpdateInput = {
+  guestName: string;
+  email: string;
+  phone: string;
+  arrivalTime: string;
+  tableSize: number;
+};

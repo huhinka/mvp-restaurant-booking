@@ -16,6 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useState } from "react";
 import { Pagination } from "@/components/pagination";
+import { EditReservationDialog } from "@/components/edit-reservation-dialog";
 
 const statusVariant: Record<
   string,
@@ -131,6 +132,9 @@ export default function MyReservations() {
                       >
                         {reservation.status.toLowerCase()}
                       </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <EditReservationDialog reservation={reservation} />
                     </TableCell>
                   </TableRow>
                 ))
