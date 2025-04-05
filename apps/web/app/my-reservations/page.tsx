@@ -18,6 +18,9 @@ import { useState } from "react";
 import { Pagination } from "@/components/pagination";
 import { EditReservationDialog } from "@/components/edit-reservation-dialog";
 import { CancelReservationDialog } from "@/components/cancel-reservation-dialog";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import Link from "next/link";
 
 const statusVariant: Record<
   string,
@@ -62,6 +65,13 @@ export default function MyReservations() {
     <AuthRoute>
       <div className="p-8 max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">我的预约</h1>
+
+        <Button asChild>
+          <Link href="/book" className="gap-2">
+            <Plus className="h-4 w-4" />
+            新建预约
+          </Link>
+        </Button>
 
         <div className="rounded-md border">
           <Table>
