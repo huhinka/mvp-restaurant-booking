@@ -53,6 +53,7 @@ export const reservationSchema = `#graphql
     id: ID!
     email: String!
     phone: String!
+    role: String!
   }
 
   input ReservationInput {

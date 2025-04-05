@@ -54,3 +54,32 @@ export const CANCEL_RESERVATION = gql`
     }
   }
 `;
+
+export const GET_RESERVATIONS = gql`
+  query GetReservations(
+    $page: Int
+    $limit: Int
+    $filter: ReservationFilterInput
+  ) {
+    reservations(page: $page, limit: $limit, filter: $filter) {
+      items {
+        id
+        guestName
+        email
+        phone
+        arrivalTime
+        tableSize
+        status
+        cancellationReason
+        createdAt
+      }
+      pageInfo {
+        totalItems
+        currentPage
+        itemsPerPage
+        totalPages
+        hasNextPage
+      }
+    }
+  }
+`;

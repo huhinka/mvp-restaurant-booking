@@ -21,16 +21,7 @@ import { CancelReservationDialog } from "@/components/cancel-reservation-dialog"
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import Link from "next/link";
-
-const statusVariant: Record<
-  string,
-  "default" | "secondary" | "destructive" | "outline"
-> = {
-  REQUESTED: "secondary",
-  APPROVED: "default",
-  CANCELLED: "destructive",
-  COMPLETED: "outline",
-};
+import { statusVariant } from "@/types/reservation";
 
 interface Reservation {
   id: string;
