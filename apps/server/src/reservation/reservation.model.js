@@ -28,7 +28,7 @@ const reservationSchema = new mongoose.Schema(
       type: Date,
       required: [true, "到店时间必填"],
     },
-    partySize: {
+    tableSize: {
       type: Number,
       required: [true, "用餐人数必填"],
       min: [1, "用餐人数至少1人"],

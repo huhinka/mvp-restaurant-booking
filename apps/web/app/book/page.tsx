@@ -27,7 +27,7 @@ const formSchema = z.object({
     required_error: "请选择到店时间",
     invalid_type_error: "无效的时间格式",
   }),
-  partySize: z.coerce.number().int().positive("人数必须为正整数"),
+  tableSize: z.coerce.number().int().positive("人数必须为正整数"),
 });
 
 export default function BookPage() {
@@ -38,7 +38,7 @@ export default function BookPage() {
       guestName: "",
       email: "",
       phone: "",
-      partySize: 2,
+      tableSize: 2,
     },
   });
 
@@ -131,7 +131,7 @@ export default function BookPage() {
 
             <FormField
               control={form.control}
-              name="partySize"
+              name="tableSize"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>用餐人数</FormLabel>

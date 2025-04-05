@@ -9,7 +9,7 @@ export const GET_MY_RESERVATIONS = gql`
         phone
         email
         arrivalTime
-        partySize
+        tableSize
         status
       }
       pageInfo {

@@ -36,7 +36,7 @@ export const reservationSchema = `#graphql
     email: String!
     phone: String!
     arrivalTime: DateTime!
-    partySize: Int!
+    tableSize: Int!
     status: ReservationStatus!
     user: ID!
     createdAt: DateTime!
@@ -59,7 +59,7 @@ export const reservationSchema = `#graphql
     email: String!
     phone: String!
     arrivalTime: String!
-    partySize: Int!
+    tableSize: Int!
   }
 
   input ReservationUpdateInput {
@@ -67,7 +67,7 @@ export const reservationSchema = `#graphql
     email: String
     phone: String
     arrivalTime: String
-    partySize: Int
+    tableSize: Int
   }
 
   input ReservationFilterInput {

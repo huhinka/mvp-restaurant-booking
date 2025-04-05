@@ -33,7 +33,7 @@ describe("Reservation API", () => {
       phone: "1234567890",
       email: "test@test.com",
       arrivalTime: new Date(Date.now() + 24 * 3600 * 1000),
-      partySize: 4,
+      tableSize: 4,
       user: userId,
     });
   });
@@ -61,7 +61,7 @@ describe("Reservation API", () => {
                 arrivalTime: "${new Date(
                   Date.now() + 24 * 3600 * 1000,
                 ).toISOString()}",
-                partySize: 2
+                tableSize: 2
               }) {
                 id
                 status
@@ -96,13 +96,13 @@ describe("Reservation API", () => {
                 email: "updated@test.com",
                 phone: "1234567890",
                 arrivalTime: "${arrivalTime}",
-                partySize: 3
+                tableSize: 3
               }) {
                 guestName
                 email
                 phone
                 arrivalTime
-                partySize
+                tableSize
                 }
             }`);
 
@@ -113,7 +113,7 @@ describe("Reservation API", () => {
       expect(reservation.email).to.equal("updated@test.com");
       expect(reservation.phone).to.equal("1234567890");
       expect(reservation.arrivalTime).to.equal(arrivalTime);
-      expect(reservation.partySize).to.equal(3);
+      expect(reservation.tableSize).to.equal(3);
     });
 
     it("could not update reservation with status APPROVED", async () => {
@@ -123,9 +123,9 @@ describe("Reservation API", () => {
       const res = await guestQuery(`
             mutation UpdateReservation{
               updateReservation(id: "${testReservation._id}", input: {
-                partySize: 3
+                tableSize: 3
               }) {
-                partySize
+                tableSize
                 }
             }`);
 
@@ -191,7 +191,7 @@ describe("Reservation API", () => {
                   email
                   phone
                   arrivalTime
-                  partySize
+                  tableSize
                 }
                 pageInfo {
                   totalItems
@@ -217,7 +217,7 @@ describe("Reservation API", () => {
       expect(result.items[0].guestName).to.equal("Test User");
       expect(result.items[0].email).to.equal("test@test.com");
       expect(result.items[0].phone).to.equal("1234567890");
-      expect(result.items[0].partySize).to.equal(4);
+      expect(result.items[0].tableSize).to.equal(4);
     });
 
     it("could return empty list if no reservations", async () => {
@@ -353,7 +353,7 @@ describe("Reservation API", () => {
             phone: "1234567890",
             email: "test@test.com",
             user: guest._id,
-            partySize: 4,
+            tableSize: 4,
           });
         }
 
@@ -388,7 +388,7 @@ describe("Reservation API", () => {
                     email
                     phone
                     arrivalTime
-                    partySize
+                    tableSize
                   }
               }
             }
@@ -423,7 +423,7 @@ describe("Reservation API", () => {
                     email
                     phone
                     arrivalTime
-                    partySize
+                    tableSize
                   }
                 }
             }

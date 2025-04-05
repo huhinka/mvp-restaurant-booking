@@ -33,7 +33,7 @@ interface Reservation {
   email: string;
   phone: string;
   arrivalTime: string;
-  partySize: number;
+  tableSize: number;
   status: string;
 }
 
@@ -124,7 +124,7 @@ export default function MyReservations() {
                         "yyyy-MM-dd HH:mm",
                       )}
                     </TableCell>
-                    <TableCell>{reservation.partySize}人</TableCell>
+                    <TableCell>{reservation.tableSize}人</TableCell>
                     <TableCell className="text-right">
                       <Badge
                         variant={statusVariant[reservation.status] || "outline"}
