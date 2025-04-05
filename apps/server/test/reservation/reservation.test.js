@@ -184,19 +184,40 @@ describe("Reservation API", () => {
       const res = await guestQuery(`
             query Reservations{
               myReservations(page: 1, limit: 10) {
-                id
-                status
-                guestName
-                email
-                phone
-                arrivalTime
-                partySize
+                items {
+                  id
+                  status
+                  guestName
+                  email
+                  phone
+                  arrivalTime
+                  partySize
+                }
+                pageInfo {
+                  totalItems
+                  currentPage
+                  itemsPerPage
+                  totalPages
+                  hasNextPage
+                }
               }
             }
         `);
 
       expect(res.status).to.equal(200);
-      expect(res.body.data.myReservations.length).to.equal(1);
+      const result = res.body.data.myReservations;
+      expect(result.items.length).to.equal(1);
+      expect(result.pageInfo.totalItems).to.equal(1);
+      expect(result.pageInfo.currentPage).to.equal(1);
+      expect(result.pageInfo.itemsPerPage).to.equal(10);
+      expect(result.pageInfo.totalPages).to.equal(1);
+      expect(result.pageInfo.hasNextPage).to.be.false;
+      expect(result.items[0].id).to.equal(testReservation._id.toString());
+      expect(result.items[0].status).to.equal("REQUESTED");
+      expect(result.items[0].guestName).to.equal("Test User");
+      expect(result.items[0].email).to.equal("test@test.com");
+      expect(result.items[0].phone).to.equal("1234567890");
+      expect(result.items[0].partySize).to.equal(4);
     });
 
     it("could return empty list if no reservations", async () => {
@@ -205,14 +226,16 @@ describe("Reservation API", () => {
         `
             query Reservations{
               myReservations(page: 1, limit: 10) {
-                id
+                items {
+                  id
+                }
               }
             }
         `,
       );
 
       expect(res.status).to.equal(200);
-      expect(res.body.data.myReservations.length).to.equal(0);
+      expect(res.body.data.myReservations.items.length).to.equal(0);
     });
 
     it("could not view other guest reservations", async () => {
@@ -220,7 +243,9 @@ describe("Reservation API", () => {
         `
             query Reservations{
               reservations(page: 1, limit: 10, filter: {}) {
-                id
+                items {
+                  id
+                }
               }
             }
         `,
@@ -356,13 +381,15 @@ describe("Reservation API", () => {
                     statuses: $statuses
                   }
                 ) {
-                  id
-                  status
-                  guestName
-                  email
-                  phone
-                  arrivalTime
-                  partySize
+                  items {
+                    id
+                    status
+                    guestName
+                    email
+                    phone
+                    arrivalTime
+                    partySize
+                  }
               }
             }
         `,
@@ -374,7 +401,7 @@ describe("Reservation API", () => {
         );
 
         expect(res.status).to.equal(200);
-        expect(res.body.data.reservations.length).to.equal(1);
+        expect(res.body.data.reservations.items.length).to.equal(1);
       });
 
       it("could view all reservations with no filter", async () => {
@@ -389,20 +416,22 @@ describe("Reservation API", () => {
                     statuses: $statuses
                   }
                 ) {
-                  id
-                  status
-                  guestName
-                  email
-                  phone
-                  arrivalTime
-                  partySize
-              }
+                  items {
+                    id
+                    status
+                    guestName
+                    email
+                    phone
+                    arrivalTime
+                    partySize
+                  }
+                }
             }
         `,
         );
 
         expect(res.status).to.equal(200);
-        expect(res.body.data.reservations.length).to.equal(4);
+        expect(res.body.data.reservations.items.length).to.equal(4);
       });
 
       it("validate the edge of date range", async () => {
@@ -417,7 +446,9 @@ describe("Reservation API", () => {
                     statuses: $statuses
                   }
                 ) {
-                  id
+                  items {
+                    id
+                  }
               }
             }
           `,
@@ -428,7 +459,7 @@ describe("Reservation API", () => {
         );
 
         expect(res.status).to.equal(200);
-        expect(res.body.data.reservations.length).to.equal(1);
+        expect(res.body.data.reservations.items.length).to.equal(1);
       });
     });
   });

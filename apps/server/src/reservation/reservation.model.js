@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
 
 export const reservationStatuses = [
   "REQUESTED",
@@ -48,5 +49,7 @@ const reservationSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+reservationSchema.plugin(mongoosePaginate);
 
 export const Reservation = mongoose.model("Reservation", reservationSchema);

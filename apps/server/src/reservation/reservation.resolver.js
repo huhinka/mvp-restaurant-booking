@@ -8,12 +8,37 @@ const statusTransitionMap = {
   COMPLETED: [],
 };
 
+/**
+ * 转换 paginate 的结果为 graphql pagination 格式
+ *
+ * TODO 在 schema 上使用 label 自动转换
+ *
+ * @param {object} result mongoose-paginate-v2 的结果
+ * @returns 符合 graphql pagination 格式的结果
+ */
+function paginationResult(result) {
+  return {
+    items: result.docs,
+    pageInfo: {
+      totalItems: result.totalDocs,
+      currentPage: result.page,
+      itemsPerPage: result.limit,
+      totalPages: result.totalPages,
+      hasNextPage: result.nextPage || false,
+    },
+  };
+}
+
 export const reservationResolvers = {
   Query: {
     myReservations: async (_, { page = 1, limit = 10 }, { user }) => {
-      return Reservation.find({ user: user._id })
-        .limit(limit)
-        .skip((page - 1) * limit);
+      const query = { user: user._id };
+      const options = {
+        page,
+        limit,
+      };
+      const result = await Reservation.paginate(query, options);
+      return paginationResult(result);
     },
 
     reservations: async (_, { page = 1, limit = 10, filter }, { user }) => {
@@ -36,10 +61,14 @@ export const reservationResolvers = {
         if (endDate) query.arrivalTime.$lte = new Date(endDate);
       }
 
-      return Reservation.find(query)
-        .limit(limit)
-        .skip((page - 1) * limit)
-        .sort({ arrivalTime: 1 });
+      const options = {
+        page,
+        limit,
+        sort: { arrivalTime: 1 },
+      };
+
+      const result = await Reservation.paginate(query, options);
+      return paginationResult(result);
     },
 
     me: async (_, __, { user }) => user,

@@ -1,7 +1,7 @@
 export const reservationSchema = `#graphql
   type Query {
-    myReservations(page: Int, limit: Int): [Reservation!]!
-    reservations(page: Int, limit: Int, filter: ReservationFilterInput): [Reservation!]!
+    myReservations(page: Int, limit: Int): ReservationPagination!
+    reservations(page: Int, limit: Int, filter: ReservationFilterInput): ReservationPagination!
     me: User!
   }
 
@@ -22,6 +22,14 @@ export const reservationSchema = `#graphql
     COMPLETED
   }
 
+  type PageInfo {       
+    totalItems: Int!    
+    currentPage: Int!   
+    itemsPerPage: Int!  
+    totalPages: Int!    
+    hasNextPage: Boolean! 
+  }
+
   type Reservation {
     id: ID!
     guestName: String!
@@ -33,6 +41,11 @@ export const reservationSchema = `#graphql
     user: ID!
     createdAt: DateTime!
     updatedAt: DateTime!
+  }
+
+  type ReservationPagination {
+    items: [Reservation!]!
+    pageInfo: PageInfo!
   }
 
   type User {
