@@ -18,6 +18,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       match: /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/,
       sparse: true,
+      required: true,
+      unique: true,
     },
   },
   { timestamps: true },

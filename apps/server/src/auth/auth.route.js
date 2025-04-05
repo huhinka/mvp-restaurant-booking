@@ -9,7 +9,7 @@ import { loginValidator, registerValidator } from "./validators.js";
 export const router = express.Router();
 
 router.post("/register", registerValidator, async (req, res) => {
-  const { email, password } = req.body;
+  const { email, phone, password } = req.body;
 
   const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -17,6 +17,7 @@ router.post("/register", registerValidator, async (req, res) => {
   try {
     user = await User.create({
       email,
+      phone,
       password: hashedPassword,
       // 员工后台添加，不走注册接口
       role: "guest",

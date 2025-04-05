@@ -11,13 +11,24 @@ describe("Reservation API", () => {
 
   before(async () => {
     const [guest, guest2, staff] = await Promise.all([
-      User.create({ email: "guest@test.com", password: "pass", role: "guest" }),
       User.create({
-        email: "guest2@test.com",
+        email: "guest@test.com",
+        phone: "13612341234",
         password: "pass",
         role: "guest",
       }),
-      User.create({ email: "staff@test.com", password: "pass", role: "staff" }),
+      User.create({
+        email: "guest2@test.com",
+        phone: "13912341234",
+        password: "pass",
+        role: "guest",
+      }),
+      User.create({
+        email: "staff@test.com",
+        phone: "13812341234",
+        password: "pass",
+        role: "staff",
+      }),
     ]);
 
     guestToken = jwt.sign({ userId: guest._id }, process.env.JWT_SECRET);

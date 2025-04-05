@@ -79,7 +79,26 @@ describe("Authentication API", () => {
     });
 
     it("should 400 with duplicated email", async () => {
-      await request(app).post("/auth/register").send(testUser);
+      await request(app)
+        .post("/auth/register")
+        .send({
+          ...testUser,
+          phone: "13612344313",
+        });
+
+      const res = await request(app).post("/auth/register").send(testUser);
+
+      expect(res.status).to.equal(400);
+      expect(res.body.message).to.match(/该邮箱或手机号已注册/i);
+    });
+
+    it("should 400 with duplicated phone", async () => {
+      await request(app)
+        .post("/auth/register")
+        .send({
+          ...testUser,
+          email: "another@example.com",
+        });
 
       const res = await request(app).post("/auth/register").send(testUser);
 
