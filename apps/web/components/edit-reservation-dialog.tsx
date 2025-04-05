@@ -37,12 +37,12 @@ export function EditReservationDialog({ reservation }: EditDialogProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm">
-          编辑
+          更新
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>编辑预约</DialogTitle>
+          <DialogTitle>更新预约</DialogTitle>
         </DialogHeader>
         <ReservationForm
           initialValues={initialValues}
