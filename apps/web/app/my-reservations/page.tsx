@@ -68,7 +68,6 @@ export default function MyReservations() {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>预约 ID</TableHead>
                 <TableHead>姓名</TableHead>
                 <TableHead>联系电话</TableHead>
                 <TableHead>预计到达时间</TableHead>
@@ -82,9 +81,6 @@ export default function MyReservations() {
               {loading ? (
                 Array.from({ length: limit }).map((_, i) => (
                   <TableRow key={i}>
-                    <TableCell>
-                      <Skeleton className="h-4 w-[80px]" />
-                    </TableCell>
                     <TableCell>
                       <Skeleton className="h-4 w-[100px]" />
                     </TableCell>
@@ -117,9 +113,6 @@ export default function MyReservations() {
               ) : (
                 data?.myReservations?.items.map((reservation: Reservation) => (
                   <TableRow key={reservation.id}>
-                    <TableCell className="font-medium">
-                      #{reservation.id.slice(0, 8)}
-                    </TableCell>
                     <TableCell>{reservation.guestName}</TableCell>
                     <TableCell>{reservation.phone}</TableCell>
                     <TableCell>
