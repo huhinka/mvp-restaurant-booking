@@ -5,13 +5,14 @@ import { MongoError } from "mongodb";
 import { AuthError } from "./auth.error.js";
 import { User } from "./user.model.js";
 import { loginValidator, registerValidator } from "./validators.js";
+import { encryptPassword } from "./auth.util.js";
 
 export const router = express.Router();
 
 router.post("/register", registerValidator, async (req, res) => {
   const { email, phone, password } = req.body;
 
-  const hashedPassword = await bcrypt.hash(password, 12);
+  const hashedPassword = await encryptPassword(password);
 
   let user;
   try {
