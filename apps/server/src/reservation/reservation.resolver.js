@@ -1,4 +1,6 @@
+import { ForbiddenError } from "../auth/auth.error.js";
 import { User } from "../auth/user.model.js";
+import { AppError } from "../infrastructure/error.js";
 import { log } from "../infrastructure/logger.js";
 import { Reservation, reservationStatuses } from "./reservation.model.js";
 
@@ -52,7 +54,7 @@ export const reservationResolvers = {
         const invalidStatus = statuses.find(
           (s) => !reservationStatuses.includes(s)
         );
-        if (invalidStatus) throw new Error(`无效状态值: ${invalidStatus}`);
+        if (invalidStatus) throw new AppError(`无效状态值: ${invalidStatus}`);
         query.status = { $in: statuses };
       }
 
@@ -89,7 +91,7 @@ export const reservationResolvers = {
         return newReservation;
       } catch (error) {
         log.error(`[Resolver] 创建预约失败: ${error.stack}`);
-        throw new Error(`无法创建预约: ${error.message}`);
+        throw new AppError(`无法创建预约: ${error.message}`);
       }
     },
 
@@ -101,7 +103,7 @@ export const reservationResolvers = {
           status: "REQUESTED",
         });
         if (!reservation) {
-          throw new Error("找不到预约或预约状态不正确");
+          throw new AppError("找不到预约或预约状态不正确");
         }
 
         if (input.arrivalTime) {
@@ -112,14 +114,14 @@ export const reservationResolvers = {
         return reservation.save();
       } catch (error) {
         log.error(`[Resolver] 更新预约失败: ${error.stack}`);
-        throw new Error(`无法更新预约: ${error.message}`);
+        throw new AppError(`无法更新预约: ${error.message}`);
       }
     },
 
     cancelReservation: async (_, { id, reason }, { user }) => {
       const reservation = await Reservation.findById(id);
       if (!user._id.equals(reservation?.user._id) && !user.isStaff()) {
-        throw new Error("找不到预约或您没有权限取消此预约");
+        throw new AppError("找不到预约或您没有权限取消此预约");
       }
 
       reservation.status = "CANCELLED";
@@ -153,7 +155,7 @@ export const reservationResolvers = {
 
 function ensureStaff(user) {
   if (!user.isStaff()) {
-    throw new Error("权限不足，您没有权限进行此操作");
+    throw new ForbiddenError("权限不足，您没有权限进行此操作");
   }
 }
 
@@ -161,7 +163,7 @@ async function updateReservationStatus(id, newStatus) {
   const reservation = await Reservation.findById(id);
 
   if (!statusTransitionMap[reservation.status].includes(newStatus)) {
-    throw new Error(`无法从 ${reservation.status} 变更为 ${newStatus}`);
+    throw new AppError(`无法从 ${reservation.status} 变更为 ${newStatus}`);
   }
 
   reservation.status = newStatus;

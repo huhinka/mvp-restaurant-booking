@@ -7,7 +7,7 @@ export class AuthError extends AppError {
 }
 
 export class ForbiddenError extends AppError {
-  constructor() {
-    super("Forbidden", 403);
+  constructor(message = "Forbidden") {
+    super(message, 403);
   }
 }
