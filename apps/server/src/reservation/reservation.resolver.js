@@ -34,7 +34,8 @@ function paginationResult(result) {
 }
 
 const userLoader = new DataLoader(async (userIds) => {
-  const users = await User.find({ _id: { $in: userIds } });
+  const uniqueIds = [...new Set(userIds)];
+  const users = await User.find({ _id: { $in: uniqueIds } });
 
   const userMap = new Map();
   users.forEach((user) => userMap.set(user._id.toString(), user));
