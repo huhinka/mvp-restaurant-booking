@@ -21,6 +21,8 @@ services:
       - mongo
     environment:
       - MONGODB_URI=mongodb://admin:admin@mongo:27017/mvp-restaurant-booking?authSource=admin
+      - MONGODB_MIGRATION_URI=mongodb://admin:admin@mongo:27017/?authSource=admin
+      - APP_NAME=mvp-restaurant-booking
 
 volumes:
   volume-mongo: {}

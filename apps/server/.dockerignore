@@ -3,6 +3,7 @@ logs/
 coverage/
 
 .env
+.env.local
 
 Dockerfile*
 .dockerignore

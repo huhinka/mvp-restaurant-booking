@@ -8,7 +8,7 @@ const server = http.createServer(app);
 
 const port = process.env.PORT || 3030;
 
-connectWithRetry();
+await connectWithRetry();
 
 server.listen(port, () => {
   log.info(`Server is running on port ${port}`);

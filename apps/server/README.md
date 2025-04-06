@@ -109,6 +109,18 @@ npm run test
 npm run coverage
 ```
 
+## 项目构建
+
+### 构建 Docker 镜像
+
+在当前目录下运行以下命令构建镜像：
+
+```bash
+docker build -t mvp-restaurant-booking-server --build-context proj-root=../.. .
+```
+
+项目依赖 MongoDB，请参考 [Docker Compose 项目构建说明](../../README.md) 运行完整的应用。
+
 ## 项目关键注意点
 
 ### 开发注意点
