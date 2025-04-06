@@ -38,7 +38,7 @@ export const reservationSchema = `#graphql
     arrivalTime: DateTime!
     tableSize: Int!
     status: ReservationStatus!
-    user: ID!
+    user: User!
     cancellationReason: String
     createdAt: DateTime!
     updatedAt: DateTime!

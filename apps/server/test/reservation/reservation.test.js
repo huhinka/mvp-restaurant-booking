@@ -70,7 +70,7 @@ describe("Reservation API", () => {
                 email: "new@test.com",
                 phone: "0987654321",
                 arrivalTime: "${new Date(
-                  Date.now() + 24 * 3600 * 1000,
+                  Date.now() + 24 * 3600 * 1000
                 ).toISOString()}",
                 tableSize: 2
               }) {
@@ -158,13 +158,13 @@ describe("Reservation API", () => {
         {
           id: testReservation._id,
           reason: "test reason",
-        },
+        }
       );
 
       expect(res.status).to.equal(200);
       expect(res.body.data.cancelReservation.status).to.equal("CANCELLED");
       expect(res.body.data.cancelReservation.cancellationReason).to.equal(
-        "test reason",
+        "test reason"
       );
     });
 
@@ -178,12 +178,12 @@ describe("Reservation API", () => {
                   status
                 }          
             }
-        `,
+        `
       );
 
       expect(res.status).to.equal(200);
       expect(res.body.errors[0].message).to.match(
-        /找不到预约或您没有权限取消此预约/i,
+        /找不到预约或您没有权限取消此预约/i
       );
     });
 
@@ -241,6 +241,32 @@ describe("Reservation API", () => {
       expect(result.items[0].tableSize).to.equal(4);
     });
 
+    it("could view guest owner reservations with user info", async () => {
+      const user = await User.findOne({ email: "guest@test.com" });
+
+      const res = await guestQuery(`
+            query Reservations{
+              myReservations(page: 1, limit: 10) {
+                items {
+                  id
+                  user {
+                    id
+                    email
+                    phone
+                    role
+                  }
+                }
+              }
+            }
+        `);
+
+      expect(res.status).to.equal(200);
+      expect(res.body.data.myReservations.items[0].user.id).to.equal(user.id);
+      expect(res.body.data.myReservations.items[0].user.email).to.equal(user.email);
+      expect(res.body.data.myReservations.items[0].user.phone).to.equal(user.phone);
+      expect(res.body.data.myReservations.items[0].user.role).to.equal(user.role);
+    });
+
     it("could return empty list if no reservations", async () => {
       const res = await queryGraphQL(
         guest2Token,
@@ -252,7 +278,7 @@ describe("Reservation API", () => {
                 }
               }
             }
-        `,
+        `
       );
 
       expect(res.status).to.equal(200);
@@ -269,7 +295,7 @@ describe("Reservation API", () => {
                 }
               }
             }
-        `,
+        `
       );
 
       expect(res.status).to.equal(200);
@@ -307,7 +333,7 @@ describe("Reservation API", () => {
 
       expect(res.status).to.equal(200);
       expect(res.body.errors[0].message).to.match(
-        /无法从 CANCELLED 变更为 APPROVED/i,
+        /无法从 CANCELLED 变更为 APPROVED/i
       );
     });
 
@@ -325,7 +351,7 @@ describe("Reservation API", () => {
       expect(res.status).to.equal(200);
       expect(res.body.data.cancelReservation.status).to.equal("CANCELLED");
       expect(res.body.data.cancelReservation.cancellationReason).to.equal(
-        "test",
+        "test"
       );
     });
 
@@ -361,7 +387,7 @@ describe("Reservation API", () => {
 
       expect(res.status).to.equal(200);
       expect(res.body.errors[0].message).to.match(
-        /无法从 REQUESTED 变更为 COMPLETED/i,
+        /无法从 REQUESTED 变更为 COMPLETED/i
       );
     });
 
@@ -385,16 +411,18 @@ describe("Reservation API", () => {
         await createTestReservation("APPROVED", new Date(baseTime.setDate(21)));
         await createTestReservation(
           "COMPLETED",
-          new Date(baseTime.setDate(19)),
+          new Date(baseTime.setDate(19))
         );
         await createTestReservation(
           "REQUESTED",
           // setHours will change the date, so we need to set the date first
-          new Date(baseTime.setHours(10)),
+          new Date(baseTime.setHours(10))
         );
       });
 
       it("could view all reservations filter by date and status", async () => {
+        const guest = await User.findOne({ email: "guest@test.com" });
+
         const res = await staffQuery(
           `
             query Reservations ($statuses: [ReservationStatus!], $start: DateTime!, $end: DateTime!) {
@@ -414,6 +442,12 @@ describe("Reservation API", () => {
                     phone
                     arrivalTime
                     tableSize
+                    user {
+                      id
+                      email
+                      phone
+                      role
+                    }
                   }
               }
             }
@@ -422,11 +456,15 @@ describe("Reservation API", () => {
             statuses: ["REQUESTED", "APPROVED"],
             start: "2025-03-10T00:00:00Z",
             end: "2025-03-20T23:59:59Z",
-          },
+          }
         );
 
         expect(res.status).to.equal(200);
         expect(res.body.data.reservations.items.length).to.equal(1);
+        expect(res.body.data.reservations.items[0].user.id).to.equal(guest.id);
+        expect(res.body.data.reservations.items[0].user.email).to.equal(guest.email);
+        expect(res.body.data.reservations.items[0].user.phone).to.equal(guest.phone);
+        expect(res.body.data.reservations.items[0].user.role).to.equal(guest.role);
       });
 
       it("could view all reservations with no filter", async () => {
@@ -452,7 +490,7 @@ describe("Reservation API", () => {
                   }
                 }
             }
-        `,
+        `
         );
 
         expect(res.status).to.equal(200);
@@ -480,7 +518,7 @@ describe("Reservation API", () => {
           {
             start: "2025-03-19T00:00:00Z",
             end: "2025-03-19T00:00:00Z",
-          },
+          }
         );
 
         expect(res.status).to.equal(200);

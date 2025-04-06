@@ -1,3 +1,4 @@
+import { User } from "../auth/user.model.js";
 import { log } from "../infrastructure/logger.js";
 import { Reservation, reservationStatuses } from "./reservation.model.js";
 
@@ -49,7 +50,7 @@ export const reservationResolvers = {
 
       if (statuses?.length) {
         const invalidStatus = statuses.find(
-          (s) => !reservationStatuses.includes(s),
+          (s) => !reservationStatuses.includes(s)
         );
         if (invalidStatus) throw new Error(`无效状态值: ${invalidStatus}`);
         query.status = { $in: statuses };
@@ -136,6 +137,16 @@ export const reservationResolvers = {
       ensureStaff(user);
 
       return updateReservationStatus(id, "COMPLETED");
+    },
+  },
+
+  Reservation: {
+    user: async (reservation, _, ctx) => {
+      if (ctx.user?.id === reservation.user) {
+        return reservation.user;
+      }
+
+      return await User.findById(reservation.user);
     },
   },
 };
