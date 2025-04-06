@@ -4,22 +4,6 @@
 
 某餐厅在线预订系统，可以让顾客方便地预订座位。顾客可以通过提供个人联系方式来完成预订，餐厅员工则可以高效地查看和管理这些预订信息。
 
-## 应用功能
-
-- [x] 用户登录、注册
-- [x] 客人预约餐厅
-- [x] 客人更新预约
-- [x] 客人取消预约
-- [x] 客人查看预约情况
-- [x] 餐厅员工查看预约情况
-- [x] 餐厅员工批准预约
-- [x] 餐厅员工取消预约
-- [x] 餐厅员工完成预约
-- [ ] Swagger API Doc
-- [x] docker compose
-- [ ] metrics
-- [ ] Solidjs SPA
-
 ## 系统架构
 
 ![系统架构图](./docs/images/arch.jpg)
@@ -51,6 +35,45 @@ project
 |── package.json -- 项目配置文件
 └── README.md -- 项目说明文档
 ```
+
+## 技术概要
+
+详情查看具体 app 的 README.md 文件。
+
+前端：
+
+- Next.js SPA
+- Shadcn UI
+- GraphQL Apollo Client
+
+后端：
+
+- Express.js
+- MongoDB
+- GraphQL Apollo Server
+- JWT
+- migrate-mongo
+- TDD/Mocha/Chai/Sinon
+
+工程：
+
+- Docker
+- Docker Compose
+- Git Hook
+- Husky
+- Eslint
+- Prettier
+
+## 后端代码覆盖率报告
+
+=============================== Coverage summary ===============================
+Statements : 97.3% ( 686/705 )
+Branches : 91.01% ( 81/89 )
+Functions : 92.85% ( 26/28 )
+Lines : 97.3% ( 686/705 )
+================================================================================
+
+2025-04-06 17:15 生成。
 
 ## 本地运行搭建
 
@@ -84,7 +107,5 @@ guest 账号无法访问预约管理页面。
 ![登录页面](./docs/images/snapshot00.png)
 ![我的预约](./docs/images/snapshot01.png)
 ![预约管理](./docs/images/snapshot02.png)
-
-
 
 Copyright (c) 2022 Huhinka
