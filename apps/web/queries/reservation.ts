@@ -72,6 +72,11 @@ export const GET_RESERVATIONS = gql`
         status
         cancellationReason
         createdAt
+        user {
+          id
+          email
+          phone
+        }
       }
       pageInfo {
         totalItems

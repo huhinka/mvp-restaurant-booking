@@ -37,6 +37,13 @@ interface Reservation {
   status: string;
   cancellationReason: string | null;
   createdAt: string;
+  user: User;
+}
+interface User {
+  id: string;
+  email: string;
+  phone: string;
+  role: string;
 }
 
 export default function Reservations() {
@@ -179,6 +186,7 @@ export default function Reservations() {
                   "联系方式",
                   "预约时间",
                   "人数",
+                  "申请人联系方式",
                   "状态",
                   "操作",
                 ].map((header) => (
@@ -239,6 +247,10 @@ export default function Reservations() {
                       )}
                     </td>
                     <td className="px-4 py-3">{reservation.tableSize}人</td>
+                    <td className="px-4 py-3">
+                      <div>{reservation.user.email}</div>
+                      <div>{reservation.user.phone}</div>
+                    </td>
                     <td className="px-4 py-3">
                       <Badge
                         variant={statusVariant[reservation.status] || "outline"}
