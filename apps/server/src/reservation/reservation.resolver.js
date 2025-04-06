@@ -3,6 +3,7 @@ import { User } from "../auth/user.model.js";
 import { AppError } from "../infrastructure/error.js";
 import { log } from "../infrastructure/logger.js";
 import { Reservation, reservationStatuses } from "./reservation.model.js";
+import DataLoader from "dataloader";
 
 const statusTransitionMap = {
   REQUESTED: ["APPROVED", "CANCELLED"],
@@ -31,6 +32,15 @@ function paginationResult(result) {
     },
   };
 }
+
+const userLoader = new DataLoader(async (userIds) => {
+  const users = await User.find({ _id: { $in: userIds } });
+
+  const userMap = new Map();
+  users.forEach((user) => userMap.set(user._id.toString(), user));
+
+  return userIds.map((id) => userMap.get(id.toString()));
+});
 
 export const reservationResolvers = {
   Query: {
@@ -148,7 +158,7 @@ export const reservationResolvers = {
         return reservation.user;
       }
 
-      return await User.findById(reservation.user);
+      return await userLoader.load(reservation.user);
     },
   },
 };
