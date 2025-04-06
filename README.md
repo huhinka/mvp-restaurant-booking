@@ -15,7 +15,8 @@
 1. server：后端项目，使用 Node.js 框架，提供 RESTful 与 GraphQL 接口，处理业务逻辑，与数据库交互。
 2. web: 前端项目，SPA，使用 React 框架，提供用户界面，与后端接口交互。
 
-后端项目说明请参见 [后端项目说明](./apps/server/README.md)。
+后端项目详情请参见 [后端项目说明](./apps/server/README.md)。
+前端项目详情请参见 [前端项目说明](./apps/web/README.md)。
 
 ## 组织结构
 
