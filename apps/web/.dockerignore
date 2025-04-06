@@ -1,0 +1,10 @@
+node_modules/
+coverage/
+.vscode/
+.next/
+
+.env
+.env.local
+
+Dockerfile*
+.dockerignore

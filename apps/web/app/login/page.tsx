@@ -12,6 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { apiClient, handleApiError } from "@/lib/api-client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -31,6 +32,7 @@ type LoginForm = z.infer<typeof loginSchema>;
 export default function Login() {
   const [globalError, setGlobalError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const form = useForm<LoginForm>({
     defaultValues: {
@@ -43,10 +45,10 @@ export default function Login() {
     try {
       const res = await apiClient.post("/auth/login", values);
       localStorage.setItem("token", res.data.token);
-      window.location.href = "/my-reservations";
+      router.push("/my-reservations");
     } catch (error) {
       handleApiError(error, form.setError, (message) =>
-        setGlobalError(message),
+        setGlobalError(message)
       );
     } finally {
       setIsSubmitting(false);

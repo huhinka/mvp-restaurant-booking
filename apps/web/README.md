@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# mvp-restaurant-booking server
 
-## Getting Started
+## 项目介绍
 
-First, run the development server:
+某餐厅预约系统前端 SPA。
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## 系统架构
+
+### 系统整体介绍
+
+该系统是一个基于 Node.js 和 Express.js 的后端服务，用于处理餐厅预约相关的业务逻辑。系统采用了 GraphQL 作为 API 查询语言，通过 Apollo Server 实现了 GraphQL 的解析和路由。系统还包含了用户认证和授权模块，用于处理用户的注册、登录和权限验证等操作。系统还使用了 Docker 容器化技术，方便了部署和扩展。
+
+### 系统架构图
+
+![系统架构图](../../docs/images/architecture.jpg)
+
+## 组织结构
+
+```
+web
+├── app -- 应用路由
+├── components -- 组件
+|   ├── ui -- UI 组件
+|   └── server.js -- 应用服务器
+├── public -- 静态资源
+├── queries -- GraphQL 查询
+├── types -- 公用类型定义
+├── .env.example -- 环境变量示例
+├── Dockerfile -- Docker 镜像构建
+├── eslint.config.mjs -- eslint 配置
+├── package.json -- 项目配置
+└── README.md -- 项目说明
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 技术概要
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| 技术          | 说明                                | 官网                                     |
+| ------------- | ----------------------------------- | ---------------------------------------- |
+| Next.js       | React Web 框架                      | https://nextjs.org                       |
+| Docker        | 虚拟化应用容器引擎                  | https://www.docker.com                   |
+| GraphQL       | 可以精确返回指定字段的 API 查询语言 | https://expressjs.com                    |
+| Apollo Client | 开源的，符合规范的 GraphQL 客户端   | https://www.apollographql.com/docs/react |
+| Shadcn        | 美观的 UI 组件库                    | https://ui.shadcn.com                    |
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## 环境搭建
 
-## Learn More
+### 开发环境
 
-To learn more about Next.js, take a look at the following resources:
+| 工具    | 版本号  | 下载                                           |
+| ------- | ------- | ---------------------------------------------- |
+| Node.js | 20.19.0 | https://nodejs.org/en/download                 |
+| MongoDB | 4.4.5   | https://www.mongodb.com/try/download/community |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 开发配置
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+1. 拷贝 `.env.example` 文件为 `.env` 文件，并修改其中的配置项。主要修改数据库连接信息。
 
-## Deploy on Vercel
+### 运行步骤
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+运行开发环境：
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```bash
+npm install
+npm run dev
+```
+
+访问 http://localhost:3000 即可查看项目。
+
+## 项目构建
+
+### 构建 Docker 镜像
+
+在当前目录下运行以下命令构建镜像：
+
+```bash
+docker build -t mvp-restaurant-booking-web --build-context proj-root=../.. .
+```
+
+修改 Dockerfile 中 NEXT_PUBLIC_SERVER_URL、NEXT_PUBLIC_SERVER_GRAPHQL_URL 的值，使其指向后端服务地址。
+
+TODO 添加运行时修改环境变量的方法。
+
+### 本地运行 Docker 容器
+
+在当前目录下运行以下命令启动容器：
+
+```bash
+docker run -d -p 3000:3000 --name mvp-restaurant-booking-web mvp-restaurant-booking-web
+```
+
+项目依赖后端项目 server，请参考 [Docker Compose 项目构建说明](../../README.md) 运行完整的应用。
+
+Copyright (c) 2022 Huhinka

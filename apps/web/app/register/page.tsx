@@ -16,6 +16,7 @@ import Link from "next/link";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const registerSchema = z
   .object({
@@ -34,6 +35,7 @@ type RegisterForm = z.infer<typeof registerSchema>;
 export default function Register() {
   const [globalError, setGlobalError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const form = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
@@ -54,7 +56,7 @@ export default function Register() {
 
       const res = await apiClient.post("/auth/register", submitValues);
       localStorage.setItem("token", res.data.token);
-      window.location.href = "/my-reservations";
+      router.push("/my-reservations");
     } catch (error) {
       handleApiError(error, form.setError, (message) =>
         setGlobalError(message),
