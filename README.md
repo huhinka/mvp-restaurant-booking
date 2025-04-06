@@ -88,7 +88,7 @@ Lines : 97.3% ( 686/705 )
 请确保已经安装 Docker，然后在当前目录执行以下命令启动项目：
 
 ```bash
-docker compose up
+sh quick_start.sh
 ```
 
 浏览器地址栏输入 http://localhost:3033/login/ 访问网站。
