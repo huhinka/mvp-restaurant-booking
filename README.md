@@ -52,27 +52,39 @@ project
 └── README.md -- 项目说明文档
 ```
 
-## 技术概要
+## 本地运行搭建
 
-| 技术       | 说明             | 官网                  |
-| ---------- | ---------------- | --------------------- |
-| Node.js    | JS 运行时        | https://nodejs.org/en |
-| Express.js | Node.js web 框架 | https://expressjs.com |
-
-## 环境搭建
-
-### 开发环境
+### 环境依赖
 
 | 工具   | 版本号 | 下载                                            |
 | ------ | ------ | ----------------------------------------------- |
 | Docker | 27.4.0 | https://docs.docker.com/get-started/get-docker/ |
 
-#### docker compose 快速启动
+### 使用 docker compose 快速启动
+
+请确保已经安装 Docker，然后在当前目录执行以下命令启动项目：
 
 ```bash
 docker compose up
 ```
 
-TODO 访问 http://localhost:3033 查看效果
+浏览器地址栏输入 http://localhost:3033/login/ 访问网站。
+
+使用以下测试账号进行登录：
+
+| email             | 手机号      | 密码     |
+| ----------------- | ----------- | -------- |
+| staff@example.com | 13912341234 | 12345678 |
+| guest@example.com | 13612341234 | 12345678 |
+
+guest 账号无法访问预约管理页面。
+
+## 网页截图
+
+![登录页面](./docs/images/snapshot00.png)
+![我的预约](./docs/images/snapshot01.png)
+![预约管理](./docs/images/snapshot02.png)
+
+
 
 Copyright (c) 2022 Huhinka

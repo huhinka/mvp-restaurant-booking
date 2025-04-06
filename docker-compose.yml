@@ -20,9 +20,18 @@ services:
     depends_on:
       - mongo
     environment:
+      - NODE_ENV=production
       - MONGODB_URI=mongodb://admin:admin@mongo:27017/mvp-restaurant-booking?authSource=admin
       - MONGODB_MIGRATION_URI=mongodb://admin:admin@mongo:27017/?authSource=admin
+      - JWT_SECRET=mvp-restaurant-booking-secret
       - APP_NAME=mvp-restaurant-booking
+
+  web:
+    image: mvp-restaurant-booking-web:latest
+    ports:
+      - "3033:80"
+    depends_on:
+      - server
 
 volumes:
   volume-mongo: {}
