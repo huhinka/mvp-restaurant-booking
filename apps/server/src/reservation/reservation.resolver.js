@@ -155,8 +155,8 @@ export const reservationResolvers = {
 
   Reservation: {
     user: async (reservation, _, ctx) => {
-      if (ctx.user?.id === reservation.user) {
-        return reservation.user;
+      if (ctx.user._id.toString() === reservation.user.toString()) {
+        return ctx.user;
       }
 
       return await userLoader.load(reservation.user);
