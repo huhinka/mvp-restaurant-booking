@@ -1,47 +1,9 @@
+import DataLoader from "dataloader";
 import { ForbiddenError } from "../auth/auth.error.js";
 import { User } from "../auth/user.model.js";
 import { AppError } from "../infrastructure/error.js";
 import { log } from "../infrastructure/logger.js";
 import { Reservation, reservationStatuses } from "./reservation.model.js";
-import DataLoader from "dataloader";
-
-const statusTransitionMap = {
-  REQUESTED: ["APPROVED", "CANCELLED"],
-  APPROVED: ["COMPLETED", "CANCELLED"],
-  CANCELLED: [],
-  COMPLETED: [],
-};
-
-/**
- * 转换 paginate 的结果为 graphql pagination 格式
- *
- * TODO 在 schema 上使用 label 自动转换
- *
- * @param {object} result mongoose-paginate-v2 的结果
- * @returns 符合 graphql pagination 格式的结果
- */
-function paginationResult(result) {
-  return {
-    items: result.docs,
-    pageInfo: {
-      totalItems: result.totalDocs,
-      currentPage: result.page,
-      itemsPerPage: result.limit,
-      totalPages: result.totalPages,
-      hasNextPage: result.nextPage || false,
-    },
-  };
-}
-
-const userLoader = new DataLoader(async (userIds) => {
-  const uniqueIds = [...new Set(userIds)];
-  const users = await User.find({ _id: { $in: uniqueIds } });
-
-  const userMap = new Map();
-  users.forEach((user) => userMap.set(user._id.toString(), user));
-
-  return userIds.map((id) => userMap.get(id.toString()));
-});
 
 export const reservationResolvers = {
   Query: {
@@ -168,12 +130,53 @@ export const reservationResolvers = {
   },
 };
 
+/**
+ * 转换 paginate 的结果为 graphql pagination 格式
+ *
+ * @param {object} result mongoose-paginate-v2 的结果
+ * @returns 符合 graphql pagination 格式的结果
+ */
+function paginationResult(result) {
+  return {
+    items: result.docs,
+    pageInfo: {
+      totalItems: result.totalDocs,
+      currentPage: result.page,
+      itemsPerPage: result.limit,
+      totalPages: result.totalPages,
+      hasNextPage: result.nextPage || false,
+    },
+  };
+}
+
+/**
+ * User 的 DataLoader。
+ * 
+ * Query reservations 时，如果同一个 user 出现多次，则只查询一次
+ */
+const userLoader = new DataLoader(async (userIds) => {
+  const uniqueIds = [...new Set(userIds)];
+  const users = await User.find({ _id: { $in: uniqueIds } });
+
+  const userMap = new Map();
+  users.forEach((user) => userMap.set(user._id.toString(), user));
+
+  return userIds.map((id) => userMap.get(id.toString()));
+});
+
 function ensureStaff(user) {
   if (!user.isStaff()) {
     throw new ForbiddenError("权限不足，您没有权限进行此操作");
   }
 }
 
+/**
+ * 更新某预约的状态。
+ *
+ * @param {ObjectId} id 预约 ID
+ * @param {string} newStatus 新状态
+ * @returns 更新后的预约
+ */
 async function updateReservationStatus(id, newStatus) {
   const reservation = await Reservation.findById(id);
 
@@ -186,3 +189,13 @@ async function updateReservationStatus(id, newStatus) {
   reservation.status = newStatus;
   return reservation.save();
 }
+
+/**
+ * 预约状态变更转移规则。
+ */
+const statusTransitionMap = {
+  REQUESTED: ["APPROVED", "CANCELLED"],
+  APPROVED: ["COMPLETED", "CANCELLED"],
+  CANCELLED: [],
+  COMPLETED: [],
+};
