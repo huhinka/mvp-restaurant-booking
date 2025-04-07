@@ -6,8 +6,6 @@
 
 ## 系统架构
 
-![系统架构图](./docs/images/arch.jpg)
-
 ### 系统整体介绍
 
 系统分为前端与后端两个项目，前端使用 React，后端使用 Express.js，数据库使用 MongoDB。

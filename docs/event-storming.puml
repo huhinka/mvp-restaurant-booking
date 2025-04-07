@@ -55,8 +55,6 @@ Command("RequestReservation") [
   客人 Email
   预计抵达时间
   宴会规模（人数）
-  --
-  1. 电话与 Email 至少一个不为空
 ]
 
 Command("ApproveReservation") [
@@ -74,8 +72,6 @@ Command("UpdateReservation") [
   客人 Email
   预计抵达时间
   宴会规模（人数）
-  --
-  1. 电话与 Email 至少一个不为空
 ]
 
 Command("CancelReservation") [
