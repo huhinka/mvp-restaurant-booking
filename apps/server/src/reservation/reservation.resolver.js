@@ -137,6 +137,9 @@ export const reservationResolvers = {
 
       reservation.status = "CANCELLED";
       reservation.cancellationReason = reason;
+
+      log.info(`[Resolver] 取消预约成功: ${reservation._id}`);
+
       return reservation.save();
     },
 
@@ -176,6 +179,8 @@ async function updateReservationStatus(id, newStatus) {
   if (!statusTransitionMap[reservation.status].includes(newStatus)) {
     throw new AppError(`无法从 ${reservation.status} 变更为 ${newStatus}`);
   }
+
+  log.info(`[Resolver] 更新预约状态: ${reservation._id} -> ${newStatus}`);
 
   reservation.status = newStatus;
   return reservation.save();
