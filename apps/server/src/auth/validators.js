@@ -7,7 +7,7 @@ const options = {
 
 const phonePattern = /^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/;
 
-export const validateRegister = (data) => {
+const validateRegister = (data) => {
   const schema = Joi.object({
     email: Joi.string().email().required().messages({
       "string.empty": "请输入邮箱",
@@ -37,7 +37,7 @@ export const registerValidator = (req, res, next) => {
   next();
 };
 
-export const validateLogin = (data) => {
+const validateLogin = (data) => {
   const schema = Joi.object({
     identifier: Joi.alternatives()
       .try(Joi.string().email(), Joi.string().pattern(phonePattern))
