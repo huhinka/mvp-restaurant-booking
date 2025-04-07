@@ -50,6 +50,7 @@ export const reservationResolvers = {
       const options = {
         page,
         limit,
+        sort: { _id: -1 },
       };
       const result = await Reservation.paginate(query, options);
       return paginationResult(result);
@@ -78,7 +79,7 @@ export const reservationResolvers = {
       const options = {
         page,
         limit,
-        sort: { arrivalTime: 1 },
+        sort: { _id: -1 },
       };
 
       const result = await Reservation.paginate(query, options);
