@@ -52,7 +52,7 @@ project
 - GraphQL Apollo Server
 - JWT
 - migrate-mongo
-- TDD/Mocha/Chai/Sinon
+- TDD/Mocha/Chai/Sinon/supertest
 
 工程：
 
