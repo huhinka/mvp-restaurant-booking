@@ -7,6 +7,9 @@
       "path": "./apps/server"
     },
     {
+      "path": "./apps/server-nestjs"
+    },
+    {
       "path": "./apps/web"
     }
   ],
