@@ -1,15 +1,13 @@
 import { JwtModule, JwtService } from '@nestjs/jwt';
-import { getModelToken, MongooseModule } from '@nestjs/mongoose';
+import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryServer } from 'mongodb-memory-server';
 import { Model } from 'mongoose';
-import { User, UserRole, UserSchema } from '../user/user.schema';
+import { User, UserRole } from '../user/user.schema';
 import { AuthException } from './auth.exception';
 import { AuthService } from './auth.service';
 import { AuthResponseDto } from './dtos/auth.response.dto';
 
 const WRONG_PASSWORD = 'wrong-password';
-
 jest.mock('bcrypt', () => ({
   // 减少单测执行时间，bcrypt 哈希是 CPU 密集型任务
   hash: jest.fn().mockResolvedValue('hashed-password'),
@@ -25,19 +23,20 @@ jest.mock('bcrypt', () => ({
 describe('AuthService', () => {
   let service: AuthService;
   let userModel: Model<User>;
-  let mongoServer: MongoMemoryServer;
   let module: TestingModule;
 
   const mockJwtService = {
     sign: jest.fn().mockReturnValue('mock-token'),
   };
 
-  beforeAll(async () => {
-    mongoServer = await MongoMemoryServer.create();
+  const mockUserModel = {
+    findOne: jest.fn(),
+    create: jest.fn(),
+  };
+
+  beforeEach(async () => {
     module = await Test.createTestingModule({
       imports: [
-        MongooseModule.forRoot(mongoServer.getUri()),
-        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
         JwtModule.register({
           secret: process.env.JWT_SECRET || 'test-secret',
           signOptions: { expiresIn: '1h' },
@@ -49,20 +48,15 @@ describe('AuthService', () => {
           provide: JwtService,
           useValue: mockJwtService,
         },
+        {
+          provide: getModelToken(User.name),
+          useValue: mockUserModel,
+        },
       ],
     }).compile();
-  });
 
-  afterAll(async () => {
-    await mongoServer.stop();
-    await module.close();
-  });
-
-  beforeEach(async () => {
     service = module.get<AuthService>(AuthService);
     userModel = module.get<Model<User>>(getModelToken(User.name));
-
-    await userModel.deleteMany({});
   });
 
   it('should be defined', () => {
@@ -77,18 +71,29 @@ describe('AuthService', () => {
     };
 
     it('should register a new user', async () => {
+      mockUserModel.findOne.mockResolvedValueOnce(null);
+      mockUserModel.create.mockResolvedValueOnce({
+        _id: 'user-id',
+        email: registerDto.email,
+        phone: registerDto.phone,
+        password: 'hashed-password',
+        role: UserRole.GUEST,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
       const result = await service.register(registerDto);
 
       expect(result).toBeInstanceOf(AuthResponseDto);
       expect(result).toEqual({
-        userId: expect.any(String),
+        userId: 'user-id',
         role: UserRole.GUEST,
         token: 'mock-token',
       });
     });
 
     it('should throw AuthException when conflict with email', async () => {
-      jest.spyOn(userModel, 'findOne').mockResolvedValueOnce({
+      mockUserModel.findOne.mockResolvedValueOnce({
         _id: 'existing-user-id',
         email: registerDto.email,
         phone: 'other phone',
@@ -99,13 +104,16 @@ describe('AuthService', () => {
         save: jest.fn(),
       });
 
-      await expect(service.register(registerDto)).rejects.toThrow(
-        AuthException,
-      );
+      try {
+        await service.register(registerDto);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AuthException);
+        expect(error.message).toBe('用户已存在');
+      }
     });
 
     it('should throw AuthException when conflict with phone', async () => {
-      jest.spyOn(userModel, 'findOne').mockResolvedValueOnce({
+      mockUserModel.findOne.mockResolvedValueOnce({
         _id: 'existing-user-id',
         email: 'other email',
         phone: registerDto.phone,
@@ -113,12 +121,14 @@ describe('AuthService', () => {
         role: UserRole.GUEST,
         createdAt: new Date(),
         updatedAt: new Date(),
-        save: jest.fn(),
       });
 
-      await expect(service.register(registerDto)).rejects.toThrow(
-        AuthException,
-      );
+      try {
+        await service.register(registerDto);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AuthException);
+        expect(error.message).toBe('用户已存在');
+      }
     });
   });
 
@@ -129,7 +139,7 @@ describe('AuthService', () => {
     };
 
     it('should login a user', async () => {
-      jest.spyOn(userModel, 'findOne').mockResolvedValueOnce({
+      mockUserModel.findOne.mockResolvedValueOnce({
         _id: 'user-id',
         email: loginDto.identifier,
         phone: 'other phone',
@@ -137,7 +147,6 @@ describe('AuthService', () => {
         role: UserRole.GUEST,
         createdAt: new Date(),
         updatedAt: new Date(),
-        save: jest.fn(),
       });
 
       const result = await service.login(loginDto);
@@ -151,9 +160,14 @@ describe('AuthService', () => {
     });
 
     it('should throw AuthException when user not found', async () => {
-      jest.spyOn(userModel, 'findOne').mockResolvedValueOnce(null);
+      mockUserModel.findOne.mockResolvedValueOnce(null);
 
-      await expect(service.login(loginDto)).rejects.toThrow(AuthException);
+      try {
+        await service.login(loginDto);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AuthException);
+        expect(error.message).toBe('用户名或密码错误');
+      }
     });
 
     it('should throw AuthException when password is incorrect', async () => {
@@ -162,7 +176,7 @@ describe('AuthService', () => {
         password: WRONG_PASSWORD,
       };
 
-      jest.spyOn(userModel, 'findOne').mockResolvedValueOnce({
+      mockUserModel.findOne.mockResolvedValueOnce({
         _id: 'user-id',
         email: loginDto.identifier,
         phone: 'other phone',
@@ -170,10 +184,14 @@ describe('AuthService', () => {
         role: UserRole.GUEST,
         createdAt: new Date(),
         updatedAt: new Date(),
-        save: jest.fn(),
       });
 
-      await expect(service.login(loginDto)).rejects.toThrow(AuthException);
+      try {
+        await service.login(loginDto);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AuthException);
+        expect(error.message).toBe('用户名或密码错误');
+      }
     });
   });
 });

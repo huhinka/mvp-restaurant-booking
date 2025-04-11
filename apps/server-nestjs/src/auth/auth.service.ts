@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
-import { compare, hash } from 'bcrypt';
+import { hash, compare } from 'bcrypt';
 import { Model } from 'mongoose';
 import { LoginDto } from '../user/dtos/login.dto';
 import { RegisterDto } from '../user/dtos/register.dto';
@@ -34,21 +34,20 @@ export class AuthService {
     }
 
     const hashedPassword = await hash(password, 12);
-    const newUser = new this.userModel({
+    const newUser = await this.userModel.create({
       email,
       phone,
       password: hashedPassword,
       // 注册接口只能是访客，工作人员后台手动创建
       role: UserRole.GUEST,
     });
-    const savedUser = await newUser.save();
 
     const token = this.jwtService.sign({
-      id: savedUser._id,
-      role: savedUser.role,
+      id: newUser._id,
+      role: newUser.role,
     });
 
-    return new AuthResponseDto(savedUser._id.toString(), savedUser.role, token);
+    return new AuthResponseDto(newUser._id.toString(), newUser.role, token);
   }
 
   /**
