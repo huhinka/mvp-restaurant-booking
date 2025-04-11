@@ -12,7 +12,7 @@ import { UserModule } from './user/user.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    MongooseModule.forRoot(process.env.MONGODB_URI),
+    MongooseModule.forRoot(getMongoDbUri()),
     AuthModule,
     UserModule,
   ],
@@ -20,3 +20,11 @@ import { UserModule } from './user/user.module';
   providers: [AppService],
 })
 export class AppModule {}
+
+function getMongoDbUri(): string {
+  const mongoDbUri = process.env.MONGODB_URI;
+  if (!mongoDbUri) {
+    throw new Error('MONGODB_URI 环境变量未设置');
+  }
+  return mongoDbUri;
+}
