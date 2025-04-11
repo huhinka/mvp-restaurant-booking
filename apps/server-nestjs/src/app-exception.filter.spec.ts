@@ -95,4 +95,18 @@ describe('AppExceptionFilter', () => {
       errors: {},
     });
   });
+
+  it('should handle unexpected response structure for BadRequestException', () => {
+    const exception = new BadRequestException({
+      message: 'Unexpected response structure',
+      error: 'Bad Request',
+    });
+
+    filter.catch(exception, mockArgumentsHost);
+    expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      message: '校验错误',
+      errors: {},
+    });
+  });
 });

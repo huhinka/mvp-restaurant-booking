@@ -8,6 +8,21 @@ import {
 import { Response } from 'express';
 import { AppException } from './app.exception';
 
+/**
+ * ValidationPipe 抛出的 BadRequestException 的 response 数据结构。
+ *
+ * 注意，ValidationPipe 需要自定义 exceptionFactory，否则会返回原始的错误信息。
+ *
+ * @see src/main.ts
+ */
+interface BadRequestExceptionResponse {
+  message: Array<{
+    property: string;
+    constraints: Record<string, string>;
+  }>;
+  error: string;
+}
+
 export class AppExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(AppExceptionFilter.name);
   /**
@@ -31,7 +46,9 @@ export class AppExceptionFilter implements ExceptionFilter {
     } else if (exception instanceof BadRequestException) {
       status = HttpStatus.BAD_REQUEST;
       message = '校验错误';
-      errors = this.formatValidationErrors(exception.getResponse() as any);
+      errors = this.formatValidationErrors(
+        exception.getResponse() as BadRequestExceptionResponse,
+      );
     } else if (exception instanceof Error) {
       message = exception.message;
 
@@ -45,12 +62,14 @@ export class AppExceptionFilter implements ExceptionFilter {
   }
 
   /**
-   * 格式化验证错误信息
+   * 格式化验证错误信息，以满足全局响应格式。
    *
    * @param response 响应对象
    * @returns 格式化后的错误信息对象
    */
-  private formatValidationErrors(response: any): Record<string, string[]> {
+  private formatValidationErrors(
+    response: BadRequestExceptionResponse,
+  ): Record<string, string[]> {
     if (response && response.message && Array.isArray(response.message)) {
       return response.message.reduce(
         (acc, error) => {
@@ -62,6 +81,10 @@ export class AppExceptionFilter implements ExceptionFilter {
         {} as Record<string, string[]>,
       );
     }
+
+    this.logger.warn(
+      `BadRequestException response 格式错误，请检查 ValidationPipe 配置是否正确`,
+    );
     return {};
   }
 }
