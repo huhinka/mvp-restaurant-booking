@@ -1,4 +1,4 @@
-import { ArgumentsHost } from '@nestjs/common';
+import { ArgumentsHost, BadRequestException, HttpStatus } from '@nestjs/common';
 import { AppExceptionFilter } from './app-exception.filter';
 import { AppException } from './app.exception';
 
@@ -31,6 +31,68 @@ describe('AppExceptionFilter', () => {
     expect(mockResponse.json).toHaveBeenCalledWith({
       message: exception.message,
       errors: exception.errors,
+    });
+  });
+
+  it('should set status code and response body for BadRequestException', () => {
+    const validationErrors = [
+      {
+        property: 'email',
+        constraints: {
+          isEmail: '邮件格式不正确',
+        },
+      },
+      {
+        property: 'password',
+        constraints: {
+          minLength: '至少 8 个字符',
+        },
+      },
+    ];
+
+    const exception = new BadRequestException({
+      message: validationErrors,
+      error: 'Bad Request',
+    });
+
+    filter.catch(exception, mockArgumentsHost);
+
+    expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      message: '校验错误',
+      errors: {
+        email: ['邮件格式不正确'],
+        password: ['至少 8 个字符'],
+      },
+    });
+  });
+
+  it('should set status code and response body for undefined Error', () => {
+    const exception = new Error('未定义错误');
+
+    filter.catch(exception, mockArgumentsHost);
+
+    expect(mockResponse.status).toHaveBeenCalledWith(
+      HttpStatus.INTERNAL_SERVER_ERROR,
+    );
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      message: exception.message,
+      errors: {},
+    });
+  });
+
+  it('should handle empty validation errors for BadRequestException', () => {
+    const exception = new BadRequestException({
+      message: [],
+      error: 'Bad Request',
+    });
+
+    filter.catch(exception, mockArgumentsHost);
+
+    expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.BAD_REQUEST);
+    expect(mockResponse.json).toHaveBeenCalledWith({
+      message: '校验错误',
+      errors: {},
     });
   });
 });
