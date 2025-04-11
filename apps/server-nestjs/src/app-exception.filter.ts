@@ -50,8 +50,6 @@ export class AppExceptionFilter implements ExceptionFilter {
         exception.getResponse() as BadRequestExceptionResponse,
       );
     } else if (exception instanceof Error) {
-      message = exception.message;
-
       this.logger.error(`未处理的错误：${exception.stack}`);
     }
 

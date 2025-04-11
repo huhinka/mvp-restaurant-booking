@@ -76,7 +76,7 @@ describe('AppExceptionFilter', () => {
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
     expect(mockResponse.json).toHaveBeenCalledWith({
-      message: exception.message,
+      message: 'Internal Server Error',
       errors: {},
     });
   });
