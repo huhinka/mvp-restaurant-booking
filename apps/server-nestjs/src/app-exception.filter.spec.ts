@@ -17,6 +17,7 @@ describe('AppExceptionFilter', () => {
       switchToHttp: () => ({
         getResponse: () => mockResponse,
       }),
+      getType: () => 'http',
     } as unknown as ArgumentsHost;
   });
 

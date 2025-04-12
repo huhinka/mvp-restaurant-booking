@@ -23,6 +23,12 @@ interface BadRequestExceptionResponse {
   error: string;
 }
 
+declare module '@nestjs/common' {
+  interface ArgumentsHost {
+    getType(): 'http' | 'ws' | 'rpc' | 'graphql';
+  }
+}
+
 export class AppExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(AppExceptionFilter.name);
   /**
@@ -31,7 +37,22 @@ export class AppExceptionFilter implements ExceptionFilter {
    * @param exception AppException App 全局异常
    * @param host 上下文
    */
-  catch(exception: unknown, host: ArgumentsHost) {
+  catch(exception: Error, host: ArgumentsHost) {
+    const ctxType = host.getType();
+
+    if (ctxType === 'http') {
+      this.handleHttpException(exception, host);
+    } else if (ctxType === 'graphql') {
+      this.handleGraphqlException(exception);
+    }
+  }
+
+  private handleGraphqlException(exception: Error) {
+    // GraphQL Server 默认处理逻辑，与 server 项目保持一致
+    this.logger.error(`[GraphQL] ${exception.stack}`);
+  }
+
+  private handleHttpException(exception: Error, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 

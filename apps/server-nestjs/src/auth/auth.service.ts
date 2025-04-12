@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
-import { hash, compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import { Model } from 'mongoose';
 import { LoginDto } from '../user/dtos/login.dto';
 import { RegisterDto } from '../user/dtos/register.dto';
-import { User, UserRole } from '../user/user.schema';
+import { User, UserDocument, UserRole } from '../user/user.schema';
 import { AuthException } from './auth.exception';
+import { TokenPayload } from './auth.interface';
 import { AuthResponseDto } from './dtos/auth.response.dto';
 
 @Injectable()
@@ -14,6 +16,7 @@ export class AuthService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -42,10 +45,7 @@ export class AuthService {
       role: UserRole.GUEST,
     });
 
-    const token = this.jwtService.sign({
-      id: newUser._id,
-      role: newUser.role,
-    });
+    const token = this.sign(newUser);
 
     return new AuthResponseDto(newUser._id.toString(), newUser.role, token);
   }
@@ -67,11 +67,41 @@ export class AuthService {
       throw new AuthException('用户名或密码错误');
     }
 
-    const token = this.jwtService.sign({
-      id: user._id,
-      role: user.role,
-    });
+    const token = this.sign(user);
 
     return new AuthResponseDto(user._id.toString(), user.role, token);
+  }
+
+  private sign(user: UserDocument): string {
+    const tokenPayload: TokenPayload = {
+      userId: user._id.toString(),
+      role: user.role,
+    };
+    return this.jwtService.sign(tokenPayload);
+  }
+
+  readTokenPayload(authHeader: string): TokenPayload {
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      throw new AuthException('缺少授权信息');
+    }
+
+    const token = authHeader.split(' ')[1];
+    let decoded: TokenPayload;
+    try {
+      decoded = this.jwtService.verify(
+        token,
+        this.configService.get('JWT_SECRET'),
+      );
+    } catch (error) {
+      const detail = error.message.includes('jwt expired')
+        ? 'Token 已过期'
+        : '无效的 Token';
+      throw new AuthException(detail);
+    }
+
+    return {
+      userId: decoded.userId,
+      role: decoded.role,
+    };
   }
 }

@@ -1,11 +1,11 @@
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Model } from 'mongoose';
 import { User, UserRole } from '../user/user.schema';
 import { AuthException } from './auth.exception';
 import { AuthService } from './auth.service';
 import { AuthResponseDto } from './dtos/auth.response.dto';
+import { ConfigModule } from '@nestjs/config';
 
 const WRONG_PASSWORD = 'wrong-password';
 jest.mock('bcrypt', () => ({
@@ -22,11 +22,11 @@ jest.mock('bcrypt', () => ({
 
 describe('AuthService', () => {
   let service: AuthService;
-  let userModel: Model<User>;
   let module: TestingModule;
 
   const mockJwtService = {
     sign: jest.fn().mockReturnValue('mock-token'),
+    verify: jest.fn(),
   };
 
   const mockUserModel = {
@@ -41,6 +41,7 @@ describe('AuthService', () => {
           secret: process.env.JWT_SECRET || 'test-secret',
           signOptions: { expiresIn: '1h' },
         }),
+        ConfigModule.forRoot(),
       ],
       providers: [
         AuthService,
@@ -56,7 +57,6 @@ describe('AuthService', () => {
     }).compile();
 
     service = module.get<AuthService>(AuthService);
-    userModel = module.get<Model<User>>(getModelToken(User.name));
   });
 
   it('should be defined', () => {
@@ -191,6 +191,90 @@ describe('AuthService', () => {
       } catch (error) {
         expect(error).toBeInstanceOf(AuthException);
         expect(error.message).toBe('用户名或密码错误');
+      }
+    });
+  });
+
+  describe('readTokenPayload', () => {
+    const validToken = 'valid-token';
+    const expiredToken = 'expired-token';
+    const invalidToken = 'invalid-token';
+
+    beforeEach(() => {
+      // Mock JWT service methods
+      mockJwtService.verify.mockImplementation((token) => {
+        if (token === validToken) {
+          return { userId: 'user-id', role: UserRole.GUEST };
+        } else if (token === expiredToken) {
+          throw new Error('jwt expired');
+        } else {
+          throw new Error('invalid signature');
+        }
+      });
+    });
+
+    it('should return the token payload for a valid Bearer token', () => {
+      const authHeader = `Bearer ${validToken}`;
+      const result = service.readTokenPayload(authHeader);
+
+      expect(result).toEqual({
+        userId: 'user-id',
+        role: UserRole.GUEST,
+      });
+    });
+
+    it('should throw AuthException with "无效的 Token" for an invalid Bearer token', () => {
+      const authHeader = `Bearer ${invalidToken}`;
+
+      try {
+        service.readTokenPayload(authHeader);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AuthException);
+        expect(error.message).toBe('无效的 Token');
+      }
+    });
+
+    it('should throw AuthException with "Token 已过期" for an expired Bearer token', () => {
+      const authHeader = `Bearer ${expiredToken}`;
+
+      try {
+        service.readTokenPayload(authHeader);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AuthException);
+        expect(error.message).toBe('Token 已过期');
+      }
+    });
+
+    it('should throw AuthException with "缺少授权信息" for a non-Bearer token', () => {
+      const authHeader = `Invalid ${validToken}`;
+
+      try {
+        service.readTokenPayload(authHeader);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AuthException);
+        expect(error.message).toBe('缺少授权信息');
+      }
+    });
+
+    it('should throw AuthException with "缺少授权信息" for an empty string', () => {
+      const authHeader = '';
+
+      try {
+        service.readTokenPayload(authHeader);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AuthException);
+        expect(error.message).toBe('缺少授权信息');
+      }
+    });
+
+    it('should throw AuthException with "缺少授权信息" for undefined', () => {
+      const authHeader = undefined;
+
+      try {
+        service.readTokenPayload(authHeader);
+      } catch (error) {
+        expect(error).toBeInstanceOf(AuthException);
+        expect(error.message).toBe('缺少授权信息');
       }
     });
   });
