@@ -1,11 +1,11 @@
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
 import { getModelToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User, UserRole } from '../user/user.schema';
 import { AuthException } from './auth.exception';
 import { AuthService } from './auth.service';
 import { AuthResponseDto } from './dtos/auth.response.dto';
-import { ConfigModule } from '@nestjs/config';
 
 const WRONG_PASSWORD = 'wrong-password';
 jest.mock('bcrypt', () => ({
@@ -29,6 +29,10 @@ describe('AuthService', () => {
     verify: jest.fn(),
   };
 
+  const mockConfigService = {
+    get: jest.fn().mockReturnValue('test-secret'),
+  };
+
   const mockUserModel = {
     findOne: jest.fn(),
     create: jest.fn(),
@@ -36,18 +40,15 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
-      imports: [
-        JwtModule.register({
-          secret: process.env.JWT_SECRET || 'test-secret',
-          signOptions: { expiresIn: '1h' },
-        }),
-        ConfigModule.forRoot(),
-      ],
       providers: [
         AuthService,
         {
           provide: JwtService,
           useValue: mockJwtService,
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService,
         },
         {
           provide: getModelToken(User.name),

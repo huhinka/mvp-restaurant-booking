@@ -22,6 +22,7 @@ import { UserModule } from './user/user.module';
       path: '/reservation',
       include: [ReservationModule],
       autoSchemaFile: true,
+      // TODO: 生产环境关闭 playground
       playground: true,
       context: ({ req }) => ({ req }),
       formatError: (err) => {
