@@ -1,17 +1,24 @@
 {
   "folders": [
     {
-      "path": "./"
+      "path": "./",
     },
     {
-      "path": "./apps/server"
+      "path": "./apps/server",
     },
     {
-      "path": "./apps/server-nestjs"
+      "path": "./apps/server-nestjs",
     },
     {
-      "path": "./apps/web"
-    }
+      "path": "./apps/web",
+    },
   ],
-  "settings": {}
+  "settings": {
+    "cSpell.words": ["staffpassword"],
+    "jest.disabledWorkspaceFolders": [
+      "server",
+      "web",
+      "mvp-restaurant-booking",
+    ],
+  },
 }

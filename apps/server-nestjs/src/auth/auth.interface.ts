@@ -1,4 +1,4 @@
-import { UserRole } from 'src/user/user.schema';
+import { UserRole } from '../user/user.schema';
 
 export interface TokenPayload {
   userId: string;

@@ -11,7 +11,7 @@ import {
   Resolver,
 } from '@nestjs/graphql';
 import { IncomingMessage } from 'http';
-import { TokenPayload } from 'src/auth/auth.interface';
+import { TokenPayload } from '../auth/auth.interface';
 import { User, User as UserDocument } from '../user/user.schema';
 import { UserService } from '../user/user.service';
 import {

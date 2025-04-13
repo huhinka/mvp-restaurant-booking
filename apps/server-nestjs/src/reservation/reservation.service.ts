@@ -94,7 +94,7 @@ export class ReservationService {
     const reservationData = {
       ...input,
       arrivalTime: new Date(input.arrivalTime),
-      user,
+      user: user._id,
     };
     const reservation = await this.reservationModel.create(reservationData);
     return reservation;
