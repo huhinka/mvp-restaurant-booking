@@ -1,3 +1,4 @@
+import { ConfigModule } from '@nestjs/config';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { getModelToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -41,6 +42,10 @@ describe('AuthService (Integration)', () => {
         JwtModule.register({
           secret: process.env.JWT_SECRET || 'test-secret',
           signOptions: { expiresIn: '1h' },
+        }),
+        ConfigModule.forRoot({
+          isGlobal: true,
+          envFilePath: '.env',
         }),
       ],
       providers: [
