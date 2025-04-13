@@ -14,7 +14,9 @@ import { UserModule } from './user/user.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    MongooseModule.forRoot(getMongoDbUri()),
+    MongooseModule.forRoot(getMongoDbUri(), {
+      autoIndex: false,
+    }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       path: '/reservation',
