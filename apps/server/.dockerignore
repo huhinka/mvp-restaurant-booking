@@ -1,6 +1,8 @@
 node_modules/
 logs/
 coverage/
+*.md
+.vscode/
 
 .env
 .env.local

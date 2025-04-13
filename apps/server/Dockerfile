@@ -5,26 +5,20 @@ RUN apk --update add tzdata \
   && echo "Asia/Shanghai" > /etc/timezone \
   && apk del tzdata
 
-# Defaults to production, docker-compose overrides this to development on build and run.
 WORKDIR /app
-# TODO 解决 logs/ 权限问题
-# RUN chown node:node ./
-# USER node
 
-# Defaults to production, docker-compose overrides this to development on build and run.
 ARG NODE_ENV=production
 ENV NODE_ENV=$NODE_ENV
 
-# Install dependencies first, as they change less often than code.
-COPY package.json ./
-COPY --from=proj-root package-lock.json ./
-RUN npm ci --production --registry https://registry.npmmirror.com \
+COPY --from=proj-root package*.json .
+COPY package.json apps/server/package.json
+RUN npm ci --omit-dev --ignore-scripts --workspace=server --registry https://registry.npmmirror.com \
+  # 修复 bcrypt DDL 缺失问题
+  && npm rebuild bcrypt \
   && npm cache clean --force
 
-COPY ./migrations ./migrations
-COPY ./migrate-mongo-config.js ./migrate-mongo-config.js
-COPY ./src ./src
+COPY . apps/server/
 
-COPY . /app
+WORKDIR /app/apps/server
 
 CMD ["node", "src/server.js"]

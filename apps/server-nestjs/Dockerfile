@@ -2,15 +2,15 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json ./
-# lock 存在于项目根目录，运行 docker build 时需要指定 --build-arg proj-root=/path/to/project-root
-COPY --from=proj-root package-lock.json ./
-RUN npm ci --registry https://registry.npmmirror.com \
+COPY --from=proj-root package*.json .
+COPY package.json apps/server-nestjs/package.json
+# build 依赖 dev 依赖
+RUN npm ci --workspace=server-nestjs --ignore-scripts --registry https://registry.npmmirror.com \
   && npm cache clean --force
 
-COPY . .
+COPY . apps/server-nestjs
 
-RUN npm run build
+RUN npm run --workspace=server-nestjs build
 
 
 
@@ -26,11 +26,16 @@ WORKDIR /app
 ARG NODE_ENV=production
 ENV NODE_ENV=$NODE_ENV
 
-COPY --from=builder /app/package*.json .
+COPY --from=proj-root package*.json .
+COPY package.json apps/server-nestjs/package.json
 # 这次仅安装生产依赖
-RUN npm ci --omit=dev --registry https://registry.npmmirror.com \
+RUN npm ci --omit=dev --workspace=server-nestjs --ignore-scripts --registry https://registry.npmmirror.com \
+  # 修复 bcrypt DDL 缺失问题
+  && npm rebuild bcrypt \
   && npm cache clean --force
 
-COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/apps/server-nestjs/dist apps/server-nestjs/dist
+
+WORKDIR /app/apps/server-nestjs
 
 CMD ["node", "dist/main"]
