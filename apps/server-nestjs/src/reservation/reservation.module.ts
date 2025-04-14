@@ -8,8 +8,16 @@ import { ReservationService } from './reservation.service';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: Reservation.name, schema: ReservationSchema },
+    MongooseModule.forFeatureAsync([
+      {
+        name: Reservation.name,
+        useFactory: () => {
+          const schema = ReservationSchema;
+          // eslint-disable-next-line @typescript-eslint/no-var-requires
+          schema.plugin(require('mongoose-paginate-v2'));
+          return schema;
+        },
+      },
     ]),
     AuthModule,
     UserModule,

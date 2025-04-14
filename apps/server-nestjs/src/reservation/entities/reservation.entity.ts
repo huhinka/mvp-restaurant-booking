@@ -1,7 +1,6 @@
 import { Field, ID, ObjectType, registerEnumType } from '@nestjs/graphql';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import * as mongoosePaginate from 'mongoose-paginate-v2';
 import { User } from '../../user/user.schema';
 
 export enum ReservationStatus {
@@ -66,7 +65,6 @@ export class Reservation {
 }
 
 export const ReservationSchema = SchemaFactory.createForClass(Reservation);
-ReservationSchema.plugin(mongoosePaginate);
 
 @ObjectType()
 export class PageInfo {
